@@ -47,7 +47,16 @@ struct MsgIMU9DOF_t {
 //Mesage types Driver -> Arduino
 #define MSG_2BYTES 0xFA
 #define MSG_6BYTES 0xFB
+#define MSG_12BYTES 0xFC
 
 #define DRIVE_CMD 0x01
+struct MsgRawCmdVel_t {
+   int16_t fl_caster_rotation;
+   int16_t fl_caster_drive;
+   int16_t fr_caster_rotation;
+   int16_t fr_caster_drive;
+   int16_t r_caster_rotation;
+   int16_t r_caster_drive;
+};
 
 #endif

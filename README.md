@@ -1,7 +1,7 @@
 # bobik_arduino
 Firmware for main Arduino board
 # PlatformIO VS Code
-Include this line to C/C++ Configurations:
+Include this line to C/C++ Configurations as "Include path":
 ```
 /home/honza/.platformio/packages/**
 ```
@@ -15,6 +15,10 @@ If serial send and receive does not work in parallel, reset Arduino
 https://aws1.discourse-cdn.com/arduino/original/4X/4/0/c/40ca0db220e359ad94a4e61e70d0a54406986232.png
 
 ```
+4 - PWM ENA drive caster LF (yellow, 1 stripe, close to pin)
+5 - PWM ENA drive caster RF (yellow, 2 stripes, close to pin)
+6 - PWM ENA drive caster R (yellow, 3 stripes, close to pin)
+
 28 - IN1 drive caster LF (green, 1 stripes, far from pin)
 30 - IN2 drive caster LF (blue, 1 stripes, far from pin)
 32 - IN3 rotation caster LF (green, 1 stripes, close to pin)
@@ -34,3 +38,44 @@ https://aws1.discourse-cdn.com/arduino/original/4X/4/0/c/40ca0db220e359ad94a4e61
 46 - PWM ENA rotation caster R (yellow, 3 stripes, close to pin)
 
 ```
+
+# Realtime Architecture
+
+- receive commands from serial > store to memory
+- independent cycle of 1kHz
+  - handlers that execute on each cycle or on a divider
+    - serial send on occurence of data
+
+
+# Protocol Description
+
+serialize/deserialize
+Loose reference to ROS messages. Not using rosserial due to issues durong compilation. Deprecated package.
+
+## Object types
+- geometry_msgs/Twist Message, misused also for odometry
+- http://wiki.ros.org/std_msgs for status reporting
+
+# Leadync synch datagram for cycle start
+$AA 55 - cycle start
+timestamp unsigned long (4bytes) - number of milliseconds passed since the Arduino board began running; overflows after approximately 50 days
+checksum - _crc8_ccitt_update of payload (http://www.nongnu.org/avr-libc/user-manual/group__util__crc.html)
+
+## Dataframe Structure
+$AA - datagram start
+<type><subject>   - serialized type of data 4bit, subject who is reporting 4bit
+<serialized data> - payload
+checksum - _crc8_ccitt_update of payload
+
+> Timestamp is used only at begining of cycle as data are considered realtime, within the 1kHz cycle. Timestamp does not use realtime clock.
+
+### <type><subject> List
+```
+55 cycle start
+1  geometry_msgs/Twist Message
+ 
+
+
+```
+
+### <type> Definitions

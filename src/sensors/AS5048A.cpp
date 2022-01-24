@@ -20,6 +20,7 @@ AS5048A::AS5048A(byte arg_cs, int16_t zero){
 	_zero = zero;
 	errorFlag = false;
 	position = 0;
+	// ::init();  //this did not work
 }
 
 

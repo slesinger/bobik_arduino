@@ -1,11 +1,14 @@
 #include "protocol.h"
 #include <Arduino.h>
 #include "CRC8.h"
+#include "ievent_handler.h"
 
 #define SERIAL_TMOUT 5
 
 CRC8 crc8 = CRC8();
 uint8_t recv_buf[64];
+
+IEventHandler *_handler_obj;
 
 void protocol_init() {
     Serial.begin(500000);
@@ -122,19 +125,30 @@ void dispatch_void(unsigned long timeout, unsigned long granularity, uint8_t *lo
 
 void dispatch_until(unsigned long timeout, unsigned long granularity, uint8_t *log_buf) {
   while(1) {  // Read and wait cycle
-    if (Serial.available() >= 3) {
+    if (Serial.available() >= 4) {
       if (Serial.peek() == MSG_2BYTES) {
-        Serial.readBytes(recv_buf, 3);
-        memcpy(log_buf, recv_buf, 3);
+        Serial.readBytes(recv_buf, 4);
+        dispatch_tohandlers(recv_buf[1], log_buf);
+        // memcpy(log_buf, recv_buf, 4);
       }
       else if (Serial.peek() == MSG_6BYTES) {
         if (Serial.available() >= 8) {
           Serial.readBytes(recv_buf, 8);
-          memcpy(log_buf, recv_buf, 8);
+          dispatch_tohandlers(recv_buf[1], log_buf);
+          // memcpy(log_buf, recv_buf, 8);
         }
+        else continue;
+      }
+      else if (Serial.peek() == MSG_12BYTES) {
+        if (Serial.available() >= 14) {
+          Serial.readBytes(recv_buf, 14);
+          dispatch_tohandlers(recv_buf[1], log_buf);
+          // memcpy(log_buf, recv_buf+2, 4);
+        }
+        else continue;
       }
       else { //unknown data, read one byte and throuw away
-        Serial.read();
+        Serial.read();  
         continue;
       }
     }
@@ -150,4 +164,13 @@ void dispatch_until(unsigned long timeout, unsigned long granularity, uint8_t *l
       return;
     }
   }
+}
+
+void dispatch_tohandlers(uint8_t msg_type, uint8_t *log_buf) {
+  // TODO _handler_obj = map.get(msg_type);
+  _handler_obj->serial_message_handler(recv_buf+2, log_buf);  //skip message header and type
+}
+
+void serial_event_message_subscribe(uint8_t msg_type, IEventHandler *handler_obj) {
+  _handler_obj = handler_obj;
 }
