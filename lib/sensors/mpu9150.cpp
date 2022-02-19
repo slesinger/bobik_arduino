@@ -1,5 +1,5 @@
 #include "mpu9150.h"
-#include "protocol.h"
+#include <protocol.h>
 
 MPU9150 accelGyroMag = MPU9150(0x68);
 boolean conn_ok = false;

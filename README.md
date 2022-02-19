@@ -79,3 +79,25 @@ checksum - _crc8_ccitt_update of payload
 ```
 
 ### <type> Definitions
+
+
+# Arduino pin setup
+
+10 - AS5048A SPI CS FL
+11 - AS5048A SPI CS FR
+12 - AS5048A SPI CS R
+50 - AS5048A MISO
+51 - AS5048A MOSI
+52 - AS5048A SPI CLK
+
+## AM5048A
+https://ams.com/documents/20143/36005/AS5048_DS000298_4-00.pdf
+
+https://zoodmall.com/cdn-cgi/image/w=500,fit=contain,f=auto/http://luckyretail.com/Uploadfile/201907141/257786/257786-5.jpg
+
+CSn - green
+CLK - blue
+MOSI- yellow
+MISO- white
+V5V - red
+GND - black

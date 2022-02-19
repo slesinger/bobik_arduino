@@ -1,14 +1,14 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include "main.h"
-#include "protocol.h"
-#include "protocol_types.h"
+#include <protocol.h>
+#include <protocol_types.h>
 
-#include "event_handlers/BobikCasters.h"
+#include <BobikCasters.h>
 
-#include "sensors/AS5048A.h" //absolute rotation encoder
-// #include "sensors/hx711.h"
-// #include "sensors/mpu9150.h" //IMU GY-9150
+#include <AS5048A.h> //absolute rotation encoder
+// #include <hx711.h>
+// #include <mpu9150.h> //IMU GY-9150
 
 MsgCasterJointStates_t caster_joint_states;
 AS5048A fl_caster_rotation_joint(10, 2592); //SPI cable select pin, zero angle value

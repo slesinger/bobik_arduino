@@ -1,6 +1,6 @@
 #include "hx711.h"
 #define ARDUINO 10813
-#include "protocol.h"
+#include <protocol.h>
 #include "HX711.h"
 
 HX711 scale;
