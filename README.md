@@ -19,6 +19,10 @@ https://aws1.discourse-cdn.com/arduino/original/4X/4/0/c/40ca0db220e359ad94a4e61
 5 - PWM ENA drive caster RF (yellow, 2 stripes, close to pin)
 6 - PWM ENA drive caster R (yellow, 3 stripes, close to pin)
 
+19 - odom IR tick signal FL
+20 - odom IR tick signal FR
+21 - odom IR tick signal R
+
 28 - IN1 drive caster LF (green, 1 stripes, far from pin)
 30 - IN2 drive caster LF (blue, 1 stripes, far from pin)
 32 - IN3 rotation caster LF (green, 1 stripes, close to pin)

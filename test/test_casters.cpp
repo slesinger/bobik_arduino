@@ -9,7 +9,8 @@
 */
 // #define SERIAL_OUTPUT // if enabled run "pio test", Ctrl+C, "pio device monitor -b 500000" to see serial output
 #define TEST_MOTORS
-
+// #define TEST_ROTATION
+#define TEST_DRIVE
 
 #define SIZE 70
 #define ROTATION_TOLERANCE 44  // 1 deg
@@ -163,6 +164,18 @@ void test_sensor_based_motor_rotation_r(void)
   TEST_ASSERT_INT_WITHIN(ROTATION_TOLERANCE, rotation_target, rotation_actual);
 }
 
+void test_nocount_on_nomove(void)
+{
+  uint16_t ticks_actual = 0;
+  for (int t=0; t<20*5; t++)
+  {
+    ticks_actual += robot.caster_r->getDriveTicks();
+    delay(1000/20);
+  }
+
+  TEST_ASSERT_EQUAL_INT16(0, ticks_actual);
+}
+
 void setup()
 {
   // NOTE!!! Wait for >2 secs
@@ -173,6 +186,7 @@ void setup()
   delay(2000);
   #ifndef SERIAL_OUTPUT
   UNITY_BEGIN();
+  #ifdef TEST_ROTATION
   #ifdef TEST_MOTORS
   #endif
   RUN_TEST(test_variance_fl);
@@ -188,13 +202,22 @@ void setup()
   robot.caster_fr->pingRotationMotor();
   robot.caster_r->pingRotationMotor();
 
-  RUN_TEST(test_sensor_based_motor_rotation_all_zero);
-  RUN_TEST(test_sensor_based_motor_rotation_fl);
-  RUN_TEST(test_sensor_based_motor_rotation_fr);
-  RUN_TEST(test_sensor_based_motor_rotation_r);
-  #endif
+  // RUN_TEST(test_sensor_based_motor_rotation_all_zero);
+  // RUN_TEST(test_sensor_based_motor_rotation_fl);
+  // RUN_TEST(test_sensor_based_motor_rotation_fr);
+  // RUN_TEST(test_sensor_based_motor_rotation_r);
+  #endif // test_motors
+  #endif // test_rotation
+
+  #ifdef TEST_DRIVE
+  TEST_MESSAGE("DRIVE");
+  RUN_TEST(test_nocount_on_nomove);  // 10 seconds, try to move wheels by hand
+  // robot.caster_fl->pingDriveMotor();
+  // robot.caster_fr->pingDriveMotor();
+  // robot.caster_r->pingDriveMotor();
+  #endif // test_drive
   UNITY_END();
-  #endif
+  #endif  // not serial_output
 
   #ifdef SERIAL_OUTPUT
   test_output_rotation();

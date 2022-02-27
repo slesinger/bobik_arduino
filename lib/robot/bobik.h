@@ -17,7 +17,7 @@ public:
 
 private:
     void read_config() {
-        #include "robot_config.h"
+       #include "robot_config.h"
     }
 };
 

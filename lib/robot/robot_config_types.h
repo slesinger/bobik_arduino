@@ -24,6 +24,7 @@ struct Caster_t {
     RotationSensor_t rotation_sensor;
     RotationMotor_t rotation_motor;
     DriveMotor_t drive_motor;
+    uint8_t drive_sensor_pin;
 };
 
 struct Base_t {

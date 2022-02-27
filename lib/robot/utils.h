@@ -9,7 +9,7 @@
  * @return int HIGH or LOW for pin value
  */
 int sign1(int16_t x) {
-    return (x < 0) ? HIGH : LOW;
+    return (x > 0) ? HIGH : LOW;
 }
 /**
  * @brief Usefull for setting motor driver in2 pin
@@ -18,7 +18,7 @@ int sign1(int16_t x) {
  * @return int HIGH or LOW for pin value
  */
 int sign2(int16_t x) {
-    return (x > 0) ? HIGH : LOW;
+    return (x < 0) ? HIGH : LOW;
 }
 
 /**
