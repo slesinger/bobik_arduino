@@ -164,16 +164,45 @@ void test_sensor_based_motor_rotation_r(void)
   TEST_ASSERT_INT_WITHIN(ROTATION_TOLERANCE, rotation_target, rotation_actual);
 }
 
-void test_nocount_on_nomove(void)
+void test_move_fwd_5seconds(void)
 {
-  uint16_t ticks_actual = 0;
+  uint32_t ticks_actual_fl = 0;
+  uint32_t ticks_actual_fr = 0;
+  uint32_t ticks_actual_r = 0;
+  // robot.caster_fl->setDriveEffort(200); //this methods is removed, replace it by pingDrive
+  // robot.caster_fr->setDriveEffort(200);
+  // robot.caster_r->setDriveEffort(200);
   for (int t=0; t<20*5; t++)
   {
-    ticks_actual += robot.caster_r->getDriveTicks();
+    ticks_actual_fl += robot.caster_fl->getDriveTicks();
+    ticks_actual_fr += robot.caster_fr->getDriveTicks();
+    ticks_actual_r += robot.caster_r->getDriveTicks();
+    robot.caster_fl->execute();  //will zero tick count;
+    robot.caster_fr->execute();  //will zero tick count;
+    robot.caster_r->execute();  //will zero tick count;
     delay(1000/20);
   }
+  // robot.caster_fl->setDriveEffort(0);
+  // robot.caster_fr->setDriveEffort(0);
+  // robot.caster_r->setDriveEffort(0);
 
-  TEST_ASSERT_EQUAL_INT16(0, ticks_actual);
+  TEST_ASSERT_INT32_WITHIN(500, 2000, ticks_actual_fl);
+  TEST_ASSERT_INT32_WITHIN(500, 2000, ticks_actual_fr);
+  TEST_ASSERT_INT32_WITHIN(500, 2000, ticks_actual_r);
+}
+
+void test_drive_1000ticks_r(void)
+{
+  Caster *caster = robot.caster_r;
+  uint32_t ticks_actual = 0;
+  #define DRIVE_TARGET 1000
+  robot.caster_r->setDriveTarget(DRIVE_TARGET);
+  for (int t=0; t<20*30; t++) // total test run length
+  {
+    ticks_actual += robot.caster_r->getDriveTicks();
+    caster->execute();
+  }
+  // TEST_ASSERT_INT32_WITHIN(5, DRIVE_TARGET, ticks_actual);
 }
 
 void setup()
@@ -198,11 +227,11 @@ void setup()
 
   #ifdef TEST_MOTORS
   // a little swing there and back, no position reading
-  robot.caster_fl->pingRotationMotor();
-  robot.caster_fr->pingRotationMotor();
-  robot.caster_r->pingRotationMotor();
+  // robot.caster_fl->pingRotationMotor();
+  // robot.caster_fr->pingRotationMotor();
+  // robot.caster_r->pingRotationMotor();
 
-  // RUN_TEST(test_sensor_based_motor_rotation_all_zero);
+  RUN_TEST(test_sensor_based_motor_rotation_all_zero);
   // RUN_TEST(test_sensor_based_motor_rotation_fl);
   // RUN_TEST(test_sensor_based_motor_rotation_fr);
   // RUN_TEST(test_sensor_based_motor_rotation_r);
@@ -211,10 +240,13 @@ void setup()
 
   #ifdef TEST_DRIVE
   TEST_MESSAGE("DRIVE");
-  RUN_TEST(test_nocount_on_nomove);  // 10 seconds, try to move wheels by hand
   // robot.caster_fl->pingDriveMotor();
   // robot.caster_fr->pingDriveMotor();
   // robot.caster_r->pingDriveMotor();
+  // RUN_TEST(test_sensor_based_motor_rotation_all_zero);
+  // RUN_TEST(test_move_fwd_5seconds);  // 10 seconds, try to move wheels by hand
+  RUN_TEST(test_drive_1000ticks_r); // with PID
+  Caster::stopAllCastersMotors();
   #endif // test_drive
   UNITY_END();
   #endif  // not serial_output

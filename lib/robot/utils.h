@@ -1,6 +1,16 @@
 #ifndef utils_h
 #define utils_h
 
+/**
+ * @brief if X is negative return -1, else return 1
+ * 
+ * @param x 
+ * @return int 
+ */
+int8_t sign(int x) 
+{
+    return (x < 0) ? -1 : 1;
+}
 
 /**
  * @brief Usefull for setting motor driver in1 pin
