@@ -196,13 +196,13 @@ void test_drive_1000ticks_r(void)
   Caster *caster = robot.caster_r;
   uint32_t ticks_actual = 0;
   #define DRIVE_TARGET 1000
-  robot.caster_r->setDriveTarget(DRIVE_TARGET);
+  caster->setDriveTarget(DRIVE_TARGET);
   for (int t=0; t<20*30; t++) // total test run length
   {
-    ticks_actual += robot.caster_r->getDriveTicks();
+    ticks_actual += caster->getDriveTicks();
     caster->execute();
   }
-  // TEST_ASSERT_INT32_WITHIN(5, DRIVE_TARGET, ticks_actual);
+  TEST_ASSERT_INT32_WITHIN(50, DRIVE_TARGET, ticks_actual);
 }
 
 void setup()

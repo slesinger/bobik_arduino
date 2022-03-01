@@ -3,7 +3,7 @@
 #include <unity.h>
 
 #define AVG_SIZE 7 // how many sensor readings to average
-#define ROTATION_TOLERANCE 30
+#define ROTATION_TOLERANCE 10
 #define DRIVE_TOLERANCE 20
 #define PWM_MAX 255
 
@@ -204,7 +204,6 @@ void Caster::execute()
         pid_prev_rotation = 0;
         pid_i_rotation = 0;
     }
-
     // set Rotation Motor
     digitalWrite(cfg.rotation_motor.in1, sign1(effort));
     digitalWrite(cfg.rotation_motor.in2, sign2(effort));
@@ -217,8 +216,25 @@ void Caster::execute()
     int pwm_drive = map_cut(abs(effort_drive),
                       DRIVE_TOLERANCE, // do not move if close enough to target [ticks]
                       50,              // if higher than that full thrust [ticks]
-                      150,             // do not use lower PWM as motor will not move anyway
+                      120,             // do not use lower PWM as motor will not move anyway
                       PWM_MAX);        // set Drive Motor
+
+    if (last_frame_ticks < 1)
+    {
+        pid_i_drive += drive_target; // no move since last frame
+    }
+    else
+    {
+        pid_i_drive = 0;
+    }
+
+    if (abs(drive_target) < ROTATION_TOLERANCE)
+    {
+        drive_target = 0;
+        pid_i_drive = 0;
+        pwm_drive = 0;
+    }
+    // set drive motor
     digitalWrite(cfg.drive_motor.in1, sign1(drive_target));
     digitalWrite(cfg.drive_motor.in2, sign2(drive_target));
     analogWrite(cfg.drive_motor.ena, abs(pwm_drive));
