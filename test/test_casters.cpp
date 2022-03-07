@@ -166,6 +166,7 @@ void test_sensor_based_motor_rotation_r(void)
 
 void test_move_fwd_5seconds(void)
 {
+  RUN_TEST(test_sensor_based_motor_rotation_all_zero);
   uint32_t ticks_actual_fl = 0;
   uint32_t ticks_actual_fr = 0;
   uint32_t ticks_actual_r = 0;
@@ -197,12 +198,46 @@ void test_drive_1000ticks_r(void)
   uint32_t ticks_actual = 0;
   #define DRIVE_TARGET 1000
   caster->setDriveTarget(DRIVE_TARGET);
-  for (int t=0; t<20*30; t++) // total test run length
+  for (int t=0; t<20*10; t++) // total test run length
   {
     ticks_actual += caster->getDriveTicks();
     caster->execute();
+    delay(1000/20);
   }
   TEST_ASSERT_INT32_WITHIN(50, DRIVE_TARGET, ticks_actual);
+}
+
+void test_drive_fwd(void)
+{
+  RUN_TEST(test_sensor_based_motor_rotation_all_zero);
+
+  char buffer [128];
+  uint32_t ticks_actual_fl = 0;
+  uint32_t ticks_actual_fr = 0;
+  uint32_t ticks_actual_r = 0;
+  #define DRIVE_TARGET_FWD 240
+  robot.caster_fl->setDriveTarget(DRIVE_TARGET_FWD);
+  robot.caster_fr->setDriveTarget(DRIVE_TARGET_FWD);
+  robot.caster_r->setDriveTarget(DRIVE_TARGET_FWD);
+
+  for (int t=0; t<20*10; t++) // total test run length
+  {
+    ticks_actual_fl += robot.caster_fl->getDriveTicks();
+    ticks_actual_fr += robot.caster_fr->getDriveTicks();
+    ticks_actual_r  += robot.caster_r->getDriveTicks();
+    robot.caster_fl->execute();
+    robot.caster_fr->execute();
+    robot.caster_r->execute();
+    delay(1000/20);
+  }
+
+  snprintf(buffer, sizeof(buffer), "Ticks FL %lu   FR %lu   R %lu", ticks_actual_fl, ticks_actual_fr, ticks_actual_r);
+  TEST_MESSAGE(buffer);
+  #define BREAKING_PATH 60
+  TEST_ASSERT_INT32_WITHIN(150, DRIVE_TARGET_FWD+BREAKING_PATH, ticks_actual_fl);  // TODO significantly improove read, change 150 to 30
+  TEST_ASSERT_INT32_WITHIN(150, DRIVE_TARGET_FWD+BREAKING_PATH, ticks_actual_fr);
+  TEST_ASSERT_INT32_WITHIN(150, DRIVE_TARGET_FWD+BREAKING_PATH, ticks_actual_r);
+  Caster::stopAllCastersMotors();
 }
 
 void setup()
@@ -215,7 +250,10 @@ void setup()
   delay(2000);
   #ifndef SERIAL_OUTPUT
   UNITY_BEGIN();
+  TEST_MESSAGE("START UNIT TESTS");
+
   #ifdef TEST_ROTATION
+  TEST_MESSAGE("ROTATION");
   #ifdef TEST_MOTORS
   #endif
   RUN_TEST(test_variance_fl);
@@ -243,11 +281,12 @@ void setup()
   // robot.caster_fl->pingDriveMotor();
   // robot.caster_fr->pingDriveMotor();
   // robot.caster_r->pingDriveMotor();
-  // RUN_TEST(test_sensor_based_motor_rotation_all_zero);
   // RUN_TEST(test_move_fwd_5seconds);  // 10 seconds, try to move wheels by hand
-  RUN_TEST(test_drive_1000ticks_r); // with PID
+  // RUN_TEST(test_drive_1000ticks_r); // with PID
+  RUN_TEST(test_drive_fwd);
   Caster::stopAllCastersMotors();
   #endif // test_drive
+  TEST_MESSAGE("FINISH UNIT TESTS");
   UNITY_END();
   #endif  // not serial_output
 
@@ -259,6 +298,6 @@ void setup()
 
 void loop()
 {
-  Serial.println("Done");
+  TEST_MESSAGE("Pause in loop");
   delay(10000);
 }

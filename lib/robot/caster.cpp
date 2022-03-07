@@ -21,6 +21,7 @@ Caster::Caster(Caster_t caster_cfg)
     drive_sensor_tick_last_update_ms = 0;
     drive_target = 0;
     pid_i_drive = 0;
+    pwm_drive_prev = 0;
 
     cfg = caster_cfg;
     rotation_sensor = new AS5048A(cfg.rotation_sensor.spi_cs_pin, cfg.rotation_sensor.zero_position); // SPI cable select pin, zero angle value
@@ -117,7 +118,7 @@ int16_t Caster::getDriveTicks()
 void Caster::inc_drive_sensor_tick()
 {
     unsigned long now_ms = millis();
-    if ((drive_sensor_tick_last_update_ms + 1 ) <= now_ms)
+    if ((drive_sensor_tick_last_update_ms + 2 ) <= now_ms)
     {
         drive_sensor_ticks++;
         drive_sensor_tick_last_update_ms = now_ms;
@@ -173,22 +174,22 @@ void Caster::execute()
     uint16_t last_frame_ticks = drive_sensor_ticks;
     drive_sensor_ticks = 0;  //make clear cut for cummulated ticks for past frame. Start new frame since now
 
-    char buffer [128];
+    // char buffer [128];
     // Rtotation PID controller
     int16_t current = this->getRotation();
     int16_t p = rotation_target - current;
-    long effort = p + (pid_i_rotation / 2);
+    long effort = p + (pid_i_rotation / 4);
     // Full speed rotation changes 145 rotation unit per 50ms
     int pwm_rotation = map_cut(abs(effort),
                       ROTATION_TOLERANCE, // do not move if close enough to target [rot units]
                       600,                // if higher than that full thrust
-                      100,                // do not use lower PWM as motor will not move anyway
+                      80,                // do not use lower PWM as motor will not move anyway
                       PWM_MAX);
 
     // snprintf(buffer, sizeof(buffer), "%d;%d;%d", p, pid_i_rotation, pwm);
     // TEST_MESSAGE(buffer);
 
-    if (abs(current - pid_prev_rotation) < ROTATION_TOLERANCE)
+    if (abs(current - pid_prev_rotation) < ROTATION_TOLERANCE+10)
     {
         pid_i_rotation += p; // no move since last frame
     }
@@ -212,12 +213,18 @@ void Caster::execute()
 
     // Rotation PID controller
     drive_target -= last_frame_ticks * last_frame_ticks_dir; // subtract what has been driven out from the target //PID P
-    long effort_drive = drive_target + (pid_i_drive / 2);
+    long effort_drive = drive_target + (pid_i_drive / 4);
     int pwm_drive = map_cut(abs(effort_drive),
                       DRIVE_TOLERANCE, // do not move if close enough to target [ticks]
                       50,              // if higher than that full thrust [ticks]
-                      120,             // do not use lower PWM as motor will not move anyway
+                      90,             // do not use lower PWM as motor will not move anyway
                       PWM_MAX);        // set Drive Motor
+    // Smooth pwm start (not stop/break) if start is too abrupt
+    if ( (pwm_drive - pwm_drive_prev) > 0)
+    {
+        pwm_drive = pwm_drive_prev + (pwm_drive - pwm_drive_prev) / 4;
+    }
+    pwm_drive_prev = pwm_drive;
 
     if (last_frame_ticks < 1)
     {
@@ -234,18 +241,27 @@ void Caster::execute()
         pid_i_drive = 0;
         pwm_drive = 0;
     }
+
     // set drive motor
     digitalWrite(cfg.drive_motor.in1, sign1(drive_target));
     digitalWrite(cfg.drive_motor.in2, sign2(drive_target));
     analogWrite(cfg.drive_motor.ena, abs(pwm_drive));
     last_frame_ticks_dir = sign(drive_target);  // will be used next frame to determine ticks to add or sub
-    snprintf(buffer, sizeof(buffer), "%d;%d;%d", drive_target, pid_i_drive, pwm_drive);
-    TEST_MESSAGE(buffer);
+    // snprintf(buffer, sizeof(buffer), "%d;%d;%d", drive_target, pid_i_drive, pwm_drive);
+    // TEST_MESSAGE(buffer);
 
 }
 
 void Caster::stopMotors()
 {
+    drive_target = 0;
+    pid_i_drive = 0;
+    digitalWrite(cfg.drive_motor.in1, LOW);
+    digitalWrite(cfg.drive_motor.in2, LOW);
+    analogWrite(cfg.drive_motor.ena, 0);
+
+    digitalWrite(cfg.rotation_motor.in1, LOW);
+    digitalWrite(cfg.rotation_motor.in2, LOW);
     analogWrite(cfg.rotation_motor.ena, 0);
 }
 

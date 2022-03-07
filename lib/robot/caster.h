@@ -87,6 +87,7 @@ private:
     unsigned long drive_sensor_tick_last_update_ms; // to filter IR signal jitter on edges, interrupts are damn fast. Signal needs to be stable at least 2ms
     int16_t drive_target;
     int16_t pid_i_drive;
+    int16_t pwm_drive_prev;
 
 };
 
