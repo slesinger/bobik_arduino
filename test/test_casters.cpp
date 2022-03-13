@@ -8,13 +8,14 @@
 * Enable required test suites here:
 */
 // #define SERIAL_OUTPUT // if enabled run "pio test", Ctrl+C, "pio device monitor -b 500000" to see serial output
-#define TEST_MOTORS
+// #define TEST_MOTORS
 // #define TEST_ROTATION
-#define TEST_DRIVE
+// #define TEST_DRIVE
+#define TEST_HIGHLEVEL
 
 #define SIZE 70
 #define ROTATION_TOLERANCE 44  // 1 deg
-#define GOOD_TIME_FOR_ROTATION 4
+#define GOOD_TIME_FOR_ROTATION 3
 
 Bobik robot;
 
@@ -225,9 +226,10 @@ void test_drive_fwd(void)
     ticks_actual_fl += robot.caster_fl->getDriveTicks();
     ticks_actual_fr += robot.caster_fr->getDriveTicks();
     ticks_actual_r  += robot.caster_r->getDriveTicks();
-    robot.caster_fl->execute();
-    robot.caster_fr->execute();
-    robot.caster_r->execute();
+    robot.execute();
+    // robot.caster_fl->execute();
+    // robot.caster_fr->execute();
+    // robot.caster_r->execute();
     delay(1000/20);
   }
 
@@ -238,6 +240,51 @@ void test_drive_fwd(void)
   TEST_ASSERT_INT32_WITHIN(150, DRIVE_TARGET_FWD+BREAKING_PATH, ticks_actual_fr);
   TEST_ASSERT_INT32_WITHIN(150, DRIVE_TARGET_FWD+BREAKING_PATH, ticks_actual_r);
   Caster::stopAllCastersMotors();
+}
+
+int f2i(float f)
+{
+  return round(f * 1000);
+}
+
+// Run test with python visualiser
+// pio test | python test/plot_base.py
+void hl_casters(int num_frames, float x, float y, float g, int enable_motors)
+{
+  char buffer [128];
+  float dbg[12];
+
+  // simulate arduino loop()
+  for (int t=0; t<num_frames; t++) // total test run length
+  {
+    robot.setCmdVel(x, y, g); //forward, strafe left, rotate left
+    robot.getCmdVelDebug(dbg);
+
+    snprintf(buffer, sizeof(buffer), "Base config;%d; %d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d", t, f2i(x), f2i(y), f2i(g),  
+      f2i(dbg[0]), f2i(dbg[1]), f2i(dbg[2]), f2i(dbg[3]), f2i(dbg[4]), f2i(dbg[5]), f2i(dbg[6]), f2i(dbg[7]), f2i(dbg[8]), f2i(dbg[9]), f2i(dbg[10]), f2i(dbg[11]));
+    TEST_MESSAGE(buffer);
+    
+    if (enable_motors == true) robot.execute();
+    delay(1000/20);
+  }
+}
+
+void test_hl_scenario()
+{
+  int motors = false;
+  #ifdef TEST_MOTORS
+  motors = true;
+  #endif
+  char buffer [128];
+  snprintf(buffer, sizeof(buffer), "Base config hdr;frame; X;Y;gamma; flx;fly;flg;flspd; frx;fry;frg;frspd; rx;ry;rg;rspd");
+  TEST_MESSAGE(buffer);
+  //cmd_vel x, y, gamma
+  hl_casters(20*1, -0.2, 0.2, 0.0, motors);
+  hl_casters(20*1, -0.02, 0.0, 0.0, motors);
+  // hl_casters(10, 0.0, 0.0, 0.0, motors);
+  // hl_casters(20, 0.1, 0.05, 0.3, motors);
+
+  hl_casters(20*3, 0.1, 0.0, 0.0, motors);
 }
 
 void setup()
@@ -286,6 +333,13 @@ void setup()
   RUN_TEST(test_drive_fwd);
   Caster::stopAllCastersMotors();
   #endif // test_drive
+
+  #ifdef TEST_HIGHLEVEL
+  #ifdef TEST_MOTORS
+  RUN_TEST(test_sensor_based_motor_rotation_all_zero);
+  #endif
+  RUN_TEST(test_hl_scenario);
+  #endif
   TEST_MESSAGE("FINISH UNIT TESTS");
   UNITY_END();
   #endif  // not serial_output

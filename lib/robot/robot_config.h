@@ -5,8 +5,30 @@
 *   This code is #included to Bobik::read_config
 */
 
-    // Base
+// Note on ROS coordinate system (https://www.ros.org/reps/rep-0103.html)
+// X forward, Y right*, Z up
+// yaw (axis Z) zero position is pointing forward*, positive turning left
+// * opposed to specification in REP103
 
+    // Base
+    #define LEN_AB 0.457 // distance between twa caster axis
+    #define LEN_AB_HALF LEN_AB / 2.0
+    #define LEN_Cc LEN_AB * 1.732051 / 2.0 // height of same-side triangle, distance between point C and center of line c (AB)
+    #define LEN_SC 2.0 / 3.0 * LEN_Cc  //distance between robot center (S - stred) and rear caster axis C
+    #define LEN_Sc 1.0 / 3.0 * LEN_Cc  //distance between robot center (S - stred) and center of line c (AB)
+    #define POS_A_x LEN_Sc
+    #define POS_A_y -LEN_AB_HALF
+    #define POS_B_x LEN_Sc
+    #define POS_B_y LEN_AB_HALF
+    #define POS_C_x -LEN_SC
+    #define POS_C_y 0.0
+    #define DEG_A M_PI / 3.0
+    #define DEG_B M_PI / -3.0
+    #define DEG_C M_PI
+
+    #define CASTER_RAD2UNITS -8192.0/M_PI
+    #define CASTER_DRIVE_MAX_SPEED 0.4
+    #define CASTER_METERS2TICKS (2*120) / (0.123 * M_PI)   // (falling + raising edge) * 120 holes / (D * PI)
 
     // Casters
     cfg.caster_fl.rotation_sensor.spi_cs_pin = 10;
