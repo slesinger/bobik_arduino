@@ -10,6 +10,8 @@
 // yaw (axis Z) zero position is pointing forward*, positive turning left
 // * opposed to specification in REP103
 
+    #define FPS 20
+
     // Base
     #define LEN_AB 0.457 // distance between twa caster axis
     #define LEN_AB_HALF LEN_AB / 2.0
@@ -27,6 +29,7 @@
     #define DEG_C M_PI
 
     #define CASTER_RAD2UNITS -8192.0/M_PI
+    #define CASTER_DRIVE_MIN_SPEED 0.03
     #define CASTER_DRIVE_MAX_SPEED 0.4
     #define CASTER_METERS2TICKS (2*120) / (0.123 * M_PI)   // (falling + raising edge) * 120 holes / (D * PI)
 

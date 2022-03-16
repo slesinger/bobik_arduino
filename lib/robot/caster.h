@@ -44,6 +44,13 @@ public:
     int16_t getDriveTicks();
 
     /**
+     * @brief Tell how many ticks the caster has to perform until next frame
+     * 
+     * @return int16_t ticks (2 edges per hole = 2 ticks)
+     */
+    int16_t getDriveTicksDept();
+
+    /**
      * @brief Add new requirement on number of ticks to current target (debt) Set Drive Effort for given frame before calling execute! PID included.
      *
      * @param drive_ticks positive number: forward, negative: backward

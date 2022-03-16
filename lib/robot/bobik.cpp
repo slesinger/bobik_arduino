@@ -1,4 +1,5 @@
 #include "bobik.h"
+#include <math.h>
 #include <unity.h>
 
 Bobik::Bobik()
@@ -45,8 +46,62 @@ float Bobik::speed_cap(float maxspd, float spd1, float spd2, float spd3)
         return max(max(maxspd/spd1, maxspd/spd2), maxspd/spd3);
 }
 
+float Bobik::simplify_rad(float rad)
+{
+    rad = fmod(rad, 2 * M_PI);
+    if (rad < -M_PI) rad += 2 * M_PI;
+    if (rad > M_PI) rad -= 2 * M_PI;
+    return rad;
+}
+
+int Bobik::optimize_rotation(float current, float *target)
+{
+    // char buffer [128];
+    float trg = *target;
+    trg= simplify_rad(trg);
+    int reverse_speed = 1;
+
+    // calculate option As-Is
+    float targetAsIs = trg;
+    float travelAsIs = abs(targetAsIs - current);
+
+    // calculate option using oposite direction
+    float targetOposite = trg + M_PI;
+    targetOposite = simplify_rad(targetOposite);
+    float travelOposite = abs(targetOposite - current);
+
+    if ( (abs(targetAsIs) + 0.8*travelAsIs) <= (abs(targetOposite) + 0.8*travelOposite) )
+        trg = targetAsIs;
+    else
+    {
+        trg = targetOposite;
+        reverse_speed = -1;
+    }
+    *target = trg;
+    return reverse_speed;
+}
+
 void Bobik::setCmdVel(float x, float y, float gamma)
 {
+    if ( (abs(x) < CASTER_DRIVE_MIN_SPEED) && (abs(y) < CASTER_DRIVE_MIN_SPEED) && (abs(gamma) < 0.0001) )
+    {  // no move
+        desired_frame_config.base.caster_fl.x = 0;
+        desired_frame_config.base.caster_fl.y = 0;
+        desired_frame_config.base.caster_fl.speed = 0;
+
+        desired_frame_config.base.caster_fr.x = 0;
+        desired_frame_config.base.caster_fr.y = 0;
+        desired_frame_config.base.caster_fr.speed = 0;
+
+        desired_frame_config.base.caster_r.x = 0;
+        desired_frame_config.base.caster_r.y = 0;
+        desired_frame_config.base.caster_r.speed = 0;
+
+        caster_fl->setDriveTarget(0);
+        caster_fr->setDriveTarget(0);
+        caster_r->setDriveTarget(0);
+        return;
+    }
 
     // Rotate base
     float ax = LEN_SC * cos(DEG_A + gamma) + x;
@@ -61,6 +116,7 @@ void Bobik::setCmdVel(float x, float y, float gamma)
     float degb = point2rad(bx - POS_B_x, by - POS_B_y);
     float degc = point2rad(cx - POS_C_x, cy - POS_C_y);
 
+    // to be moved in 1 second
     float spda = l2dist(ax - POS_A_x, ay - POS_A_y);
     float spdb = l2dist(bx - POS_B_x, by - POS_B_y);
     float spdc = l2dist(cx - POS_C_x, cy - POS_C_y);
@@ -85,13 +141,19 @@ void Bobik::setCmdVel(float x, float y, float gamma)
     desired_frame_config.base.caster_r.gamma = degc;
     desired_frame_config.base.caster_r.speed = spdc;
 
+    // 1 go normal, -1 go reverse
+    float readrot = 0.0;
+    float reverse_speed_a = optimize_rotation(readrot, &dega);
+    float reverse_speed_b = optimize_rotation(readrot, &degb);
+    float reverse_speed_c = optimize_rotation(readrot, &degc);
+
     caster_fl->setRotationTarget(dega * CASTER_RAD2UNITS);
     caster_fr->setRotationTarget(degb * CASTER_RAD2UNITS);
     caster_r->setRotationTarget(degc * CASTER_RAD2UNITS);
 
-    robot.caster_fl->setDriveTarget(spda * CASTER_METERS2TICKS);
-    robot.caster_fr->setDriveTarget(spdb * CASTER_METERS2TICKS);
-    robot.caster_r->setDriveTarget(spdc * CASTER_METERS2TICKS);
+    caster_fl->setDriveTarget(reverse_speed_a * spda * CASTER_METERS2TICKS / FPS);
+    caster_fr->setDriveTarget(reverse_speed_b * spdb * CASTER_METERS2TICKS / FPS);
+    caster_r->setDriveTarget(reverse_speed_c * spdc * CASTER_METERS2TICKS / FPS);
 
 }
 

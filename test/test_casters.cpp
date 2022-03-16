@@ -8,7 +8,7 @@
 * Enable required test suites here:
 */
 // #define SERIAL_OUTPUT // if enabled run "pio test", Ctrl+C, "pio device monitor -b 500000" to see serial output
-// #define TEST_MOTORS
+#define TEST_MOTORS
 // #define TEST_ROTATION
 // #define TEST_DRIVE
 #define TEST_HIGHLEVEL
@@ -259,9 +259,11 @@ void hl_casters(int num_frames, float x, float y, float g, int enable_motors)
   {
     robot.setCmdVel(x, y, g); //forward, strafe left, rotate left
     robot.getCmdVelDebug(dbg);
-
-    snprintf(buffer, sizeof(buffer), "Base config;%d; %d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d", t, f2i(x), f2i(y), f2i(g),  
-      f2i(dbg[0]), f2i(dbg[1]), f2i(dbg[2]), f2i(dbg[3]), f2i(dbg[4]), f2i(dbg[5]), f2i(dbg[6]), f2i(dbg[7]), f2i(dbg[8]), f2i(dbg[9]), f2i(dbg[10]), f2i(dbg[11]));
+    int dept_fl = robot.caster_fl->getDriveTicksDept();
+    int dept_fr = robot.caster_fr->getDriveTicksDept();
+    int dept_r  = robot.caster_r->getDriveTicksDept();
+    snprintf(buffer, sizeof(buffer), "Base config;%d; %d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d | %d;%d;%d", t, f2i(x), f2i(y), f2i(g),  
+      f2i(dbg[0]), f2i(dbg[1]), f2i(dbg[2]), f2i(dbg[3]), f2i(dbg[4]), f2i(dbg[5]), f2i(dbg[6]), f2i(dbg[7]), f2i(dbg[8]), f2i(dbg[9]), f2i(dbg[10]), f2i(dbg[11]),  dept_fl, dept_fr, dept_r);
     TEST_MESSAGE(buffer);
     
     if (enable_motors == true) robot.execute();
@@ -278,13 +280,118 @@ void test_hl_scenario()
   char buffer [128];
   snprintf(buffer, sizeof(buffer), "Base config hdr;frame; X;Y;gamma; flx;fly;flg;flspd; frx;fry;frg;frspd; rx;ry;rg;rspd");
   TEST_MESSAGE(buffer);
-  //cmd_vel x, y, gamma
-  hl_casters(20*1, -0.2, 0.2, 0.0, motors);
-  hl_casters(20*1, -0.02, 0.0, 0.0, motors);
+  //frames, cmd_vel x, y, gamma
+  /*
+  hl_casters(20*1, 0.1, 0.0, 0.0, motors); //drive speed test
+  hl_casters(20*1, 0.2, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.3, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.4, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.3, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.2, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.1, 0.0, 0.0, motors);
+  hl_casters(20*5, 0.0, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.1, 0.0, 0.0, motors); //drive speed test backwards
+  hl_casters(20*1, -0.2, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.3, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.4, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.3, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.2, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.1, 0.0, 0.0, motors);
+  hl_casters(20*5, 0.0, 0.0, 0.0, motors);
+  */
+
+  hl_casters(20*5, 0.4, 0.0, 0.0, motors);
+  hl_casters(20*30, 0.0, 0.0, 0.0, motors);
+
+  // hl_casters(20*3, -0.2, 0.2, 0.0, motors);
+  // hl_casters(20*3, -0.2, 0.0, 0.0, motors);
+  // hl_casters(20*8, -0.0, 0.0, 0.0, motors);  //test stop
+  // hl_casters(20*3, 0.0, -0.04, 0.0, motors);
+  // hl_casters(20*3, 0.4, 0.0, 0.0, motors);
   // hl_casters(10, 0.0, 0.0, 0.0, motors);
   // hl_casters(20, 0.1, 0.05, 0.3, motors);
+  hl_casters(20*5, 0.0, 0.0, 0.0, motors); //stop
 
-  hl_casters(20*3, 0.1, 0.0, 0.0, motors);
+}
+
+void test_base_simplify_rad()
+{
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, 0, robot.simplify_rad(0.0), 1, "0");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, M_PI, robot.simplify_rad(M_PI), 2, "M_PI");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, -M_PI, robot.simplify_rad(-M_PI), 3, "-M_PI");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, M_PI/3, robot.simplify_rad(M_PI/3), 4, "M_PI/3");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, -M_PI/3, robot.simplify_rad(-M_PI/3), 5, "-M_PI/3");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, -M_PI*2.0/3, robot.simplify_rad(-M_PI*2.0/3), 6, "-M_PI*2.0/3");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, -M_PI*0.1, robot.simplify_rad(M_PI*1.9), 7, "M_PI*1.9");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, M_PI*0.1, robot.simplify_rad(-M_PI*1.9), 8, "-M_PI*1.9");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, M_PI*0.5, robot.simplify_rad(M_PI*6.5), 9, "M_PI*6.5");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, -M_PI*0.5, robot.simplify_rad(-M_PI*6.5), 10, "-M_PI*6.5");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, -M_PI*0.1, robot.simplify_rad(M_PI*3.9), 11, "M_PI*3.9");
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, M_PI*0.1, robot.simplify_rad(-M_PI*3.9), 11, "-M_PI*3.9");
+}
+
+void test_optimize_rotation()
+{
+  //see docs/caster-rotation-angles-optimization.ods
+  float rad = 0.0;
+  UNITY_TEST_ASSERT_EQUAL_INT(1, robot.optimize_rotation(0.0, &rad), 1, "1");  //0 ~ 0
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, 0.0, rad, 1, "1a");
+  rad = M_PI*0.499;
+  UNITY_TEST_ASSERT_EQUAL_INT(1, robot.optimize_rotation(0.0, &rad), 1, "2");  //0 ~ 89
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, M_PI*0.499, rad, 1, "2a");
+  rad = M_PI*0.51;
+  UNITY_TEST_ASSERT_EQUAL_INT(-1, robot.optimize_rotation(0.0, &rad), 1, "3");  //0 ~ 91
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, -M_PI*(1-0.51), rad, 1, "3a");
+  rad = M_PI*0.99;
+  UNITY_TEST_ASSERT_EQUAL_INT(-1, robot.optimize_rotation(0.0, &rad), 1, "4");  //0 ~ 179
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, -M_PI*(1-0.99), rad, 1, "4a");
+  rad = M_PI*1.0;
+  UNITY_TEST_ASSERT_EQUAL_INT(-1, robot.optimize_rotation(0.0, &rad), 1, "5");  //0 ~ 180
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, 0.0, rad, 1, "5a");
+  rad = -M_PI*0.499;
+  UNITY_TEST_ASSERT_EQUAL_INT(1, robot.optimize_rotation(0.0, &rad), 1, "6");  //0 ~ -89
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, -M_PI*0.499, rad, 1, "6a");
+  rad = -M_PI*0.51;
+  UNITY_TEST_ASSERT_EQUAL_INT(-1, robot.optimize_rotation(0.0, &rad), 1, "7");  //0 ~ -91
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, M_PI*(1-0.51), rad, 1, "7a");
+  rad = -M_PI*0.99;
+  UNITY_TEST_ASSERT_EQUAL_INT(-1, robot.optimize_rotation(0.0, &rad), 1, "8");  //0 ~ -179
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, M_PI*(1-0.99), rad, 1, "8a");
+  rad = -M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(-1, robot.optimize_rotation(0.0, &rad), 1, "9");  //0 ~ -180
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, 0.0, rad, 1, "9a");
+
+  rad = (-0.05)*M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(1, robot.optimize_rotation(0.4*M_PI, &rad), 2, "10"); //80 ~ -5 (<90)
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (-0.05)*M_PI, rad, 2, "10a");
+  rad = (-0.0)*M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(1, robot.optimize_rotation(0.4*M_PI, &rad), 2, "11"); //80 ~ 0 (<90)
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (0.0)*M_PI, rad, 2, "11a");
+  rad = (-0.1)*M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(1, robot.optimize_rotation(0.4*M_PI, &rad), 2, "12"); //80 ~ -10 (=90)
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (-0.1)*M_PI, rad, 2, "12a");
+  rad = (-0.4)*M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(-1, robot.optimize_rotation(0.4*M_PI, &rad), 2, "13"); //80 ~ -80 (>>90)
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (1.0-0.4)*M_PI, rad, 2, "13a");
+  rad = (-0.2)*M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(1, robot.optimize_rotation(0.4*M_PI, &rad), 2, "14"); //80 ~ -80 (>90)  !too close to overflow
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (-0.2)*M_PI, rad, 2, "14a");
+
+  rad = (0.2)*M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(1, robot.optimize_rotation(0.6*M_PI, &rad), 2, "15"); //100 ~ 20 (<90)
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (0.2)*M_PI, rad, 2, "15a");
+  rad = (-0.0)*M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(1, robot.optimize_rotation(0.6*M_PI, &rad), 2, "16"); //100 ~ 0 (>90) !would overflow
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (0.0)*M_PI, rad, 2, "16a");
+  rad = (0.1)*M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(1, robot.optimize_rotation(0.6*M_PI, &rad), 2, "17"); //100 ~ 10 (=90)
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (0.1)*M_PI, rad, 2, "17a");
+  rad = (-0.4)*M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(-1, robot.optimize_rotation(0.6*M_PI, &rad), 2, "18"); //100 ~ -80 (>>90)
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (1.0-0.4)*M_PI, rad, 2, "18a");
+  rad = (1.0)*M_PI;
+  UNITY_TEST_ASSERT_EQUAL_INT(-1, robot.optimize_rotation(0.6*M_PI, &rad), 2, "19"); //100 ~ 180 (<90)  !would overflow
+  UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (1.0-1.0)*M_PI, rad, 2, "19a");
 }
 
 void setup()
@@ -294,7 +401,7 @@ void setup()
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
   Serial.begin(500000);
-  delay(2000);
+  delay(1000);
   #ifndef SERIAL_OUTPUT
   UNITY_BEGIN();
   TEST_MESSAGE("START UNIT TESTS");
@@ -338,7 +445,12 @@ void setup()
   #ifdef TEST_MOTORS
   RUN_TEST(test_sensor_based_motor_rotation_all_zero);
   #endif
+  RUN_TEST(test_base_simplify_rad);
+  RUN_TEST(test_optimize_rotation);
   RUN_TEST(test_hl_scenario);
+  #ifdef TEST_MOTORS
+  Caster::stopAllCastersMotors();
+  #endif
   #endif
   TEST_MESSAGE("FINISH UNIT TESTS");
   UNITY_END();

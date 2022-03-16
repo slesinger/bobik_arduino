@@ -26,6 +26,13 @@ public:
     void setCmdVel(float x, float y, float gamma);
 
     /**
+     * @brief Call each frame to commit new values to hardware.
+     * 
+     */
+    void execute();
+
+//like private:
+    /**
      * @brief Get internal intermediate calculations for unit tests and debugging. E.g. relative position of new base in new frame.
      * 
      * @param res - preallocated array of float. Size 12. 
@@ -36,11 +43,9 @@ public:
      */
     void getCmdVelDebug(float *res);
 
-    /**
-     * @brief Call each frame to commit new values to hardware.
-     * 
-     */
-    void execute();
+    float simplify_rad(float rad);
+    int optimize_rotation(float current, float *target);
+
 
 private:
     RobotFrameConfig desired_frame_config;
@@ -54,7 +59,6 @@ private:
      */
     float point2rad(float dx, float dy);
     float l2dist(float dx, float dy);
-
     /**
      * @brief If any wheel is requested to to go over max speed capability, calculate coefficient to reduce speed of all wheels to fix max speed.
      * 

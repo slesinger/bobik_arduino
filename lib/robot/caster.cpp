@@ -115,6 +115,11 @@ int16_t Caster::getDriveTicks()
     return drive_sensor_ticks;
 }
 
+int16_t Caster::getDriveTicksDept()
+{
+    return drive_target;
+}
+
 void Caster::inc_drive_sensor_tick()
 {
     unsigned long now_ms = millis();
