@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <unity.h> //https://github.com/ThrowTheSwitch/Unity
 #include <bobik.h>
+#include "robot_utils.h"
 
 /*
 * Enable required test suites here:
@@ -216,7 +217,7 @@ void test_drive_fwd(void)
   uint32_t ticks_actual_fl = 0;
   uint32_t ticks_actual_fr = 0;
   uint32_t ticks_actual_r = 0;
-  #define DRIVE_TARGET_FWD 240
+  #define DRIVE_TARGET_FWD 240*3
   robot.caster_fl->setDriveTarget(DRIVE_TARGET_FWD);
   robot.caster_fr->setDriveTarget(DRIVE_TARGET_FWD);
   robot.caster_r->setDriveTarget(DRIVE_TARGET_FWD);
@@ -227,9 +228,6 @@ void test_drive_fwd(void)
     ticks_actual_fr += robot.caster_fr->getDriveTicks();
     ticks_actual_r  += robot.caster_r->getDriveTicks();
     robot.execute();
-    // robot.caster_fl->execute();
-    // robot.caster_fr->execute();
-    // robot.caster_r->execute();
     delay(1000/20);
   }
 
@@ -239,7 +237,7 @@ void test_drive_fwd(void)
   TEST_ASSERT_INT32_WITHIN(150, DRIVE_TARGET_FWD+BREAKING_PATH, ticks_actual_fl);  // TODO significantly improove read, change 150 to 30
   TEST_ASSERT_INT32_WITHIN(150, DRIVE_TARGET_FWD+BREAKING_PATH, ticks_actual_fr);
   TEST_ASSERT_INT32_WITHIN(150, DRIVE_TARGET_FWD+BREAKING_PATH, ticks_actual_r);
-  Caster::stopAllCastersMotors();
+  Bobik::stopAllCastersMotors();
 }
 
 int f2i(float f)
@@ -301,7 +299,7 @@ void test_hl_scenario()
   */
 
   hl_casters(20*5, 0.4, 0.0, 0.0, motors);
-  hl_casters(20*30, 0.0, 0.0, 0.0, motors);
+  hl_casters(20*5, 0.2, 0.0, 0.0, motors);
 
   // hl_casters(20*3, -0.2, 0.2, 0.0, motors);
   // hl_casters(20*3, -0.2, 0.0, 0.0, motors);
@@ -394,6 +392,12 @@ void test_optimize_rotation()
   UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.0001, (1.0-1.0)*M_PI, rad, 2, "19a");
 }
 
+void test_map_cut()
+{
+  int16_t res;
+  res  = RobotUtils::map_cut(-80000,1 ,12, 90, 255);
+  UNITY_TEST_ASSERT_EQUAL_INT(-255, res,1,"map_cut");
+}
 void setup()
 {
   // NOTE!!! Wait for >2 secs
@@ -438,7 +442,7 @@ void setup()
   // RUN_TEST(test_move_fwd_5seconds);  // 10 seconds, try to move wheels by hand
   // RUN_TEST(test_drive_1000ticks_r); // with PID
   RUN_TEST(test_drive_fwd);
-  Caster::stopAllCastersMotors();
+  Bobik::stopAllCastersMotors();
   #endif // test_drive
 
   #ifdef TEST_HIGHLEVEL
@@ -447,9 +451,10 @@ void setup()
   #endif
   RUN_TEST(test_base_simplify_rad);
   RUN_TEST(test_optimize_rotation);
-  RUN_TEST(test_hl_scenario);
+  RUN_TEST(test_map_cut);
+  // RUN_TEST(test_hl_scenario);
   #ifdef TEST_MOTORS
-  Caster::stopAllCastersMotors();
+  Bobik::stopAllCastersMotors();
   #endif
   #endif
   TEST_MESSAGE("FINISH UNIT TESTS");

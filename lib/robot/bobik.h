@@ -10,9 +10,9 @@ class Bobik
 public:
     Base_t cfg;
 
-    Caster *caster_fl;
-    Caster *caster_fr;
-    Caster *caster_r;
+    static Caster *caster_fl;
+    static Caster *caster_fr;
+    static Caster *caster_r;
 
     Bobik();
 
@@ -24,6 +24,12 @@ public:
      * @param gamma - turn left [rad] ?;?
      */
     void setCmdVel(float x, float y, float gamma);
+
+    /**
+     * @brief Stops rotation and drive motors on all casters
+     * 
+     */
+    static void stopAllCastersMotors();
 
     /**
      * @brief Call each frame to commit new values to hardware.
@@ -72,6 +78,7 @@ private:
     void read_config() {
        #include "robot_config.h"
     }
+
 };
 
 #endif

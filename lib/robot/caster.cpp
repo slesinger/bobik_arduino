@@ -1,15 +1,12 @@
-#include "caster.h"
-#include "utils.h"
 #include <unity.h>
+#include "caster.h"
+#include "robot_utils.h"
 
 #define AVG_SIZE 7 // how many sensor readings to average
 #define ROTATION_TOLERANCE 10
-#define DRIVE_TOLERANCE 20
+#define DRIVE_TOLERANCE 10
+#define DRIVE_MAX_DEPT 100
 #define PWM_MAX 255
-
-Caster *Caster::caster_fl;
-Caster *Caster::caster_fr;
-Caster *Caster::caster_r;
 
 Caster::Caster(Caster_t caster_cfg)
 {
@@ -45,24 +42,7 @@ Caster::Caster(Caster_t caster_cfg)
 
     pinMode(cfg.drive_sensor_pin, INPUT);
     digitalWrite(cfg.drive_sensor_pin, HIGH); // set pullup resistor
-    switch (cfg.drive_sensor_pin)             // this is needed because only static method can be used with attachInterrupt
-    {
-    case 20:
-        attachInterrupt(digitalPinToInterrupt(cfg.drive_sensor_pin), drive_sensor_interrupt_fl, CHANGE);
-        caster_fl = this;
-        break;
-    case 19:
-        attachInterrupt(digitalPinToInterrupt(cfg.drive_sensor_pin), drive_sensor_interrupt_fr, CHANGE);
-        caster_fr = this;
-        break;
-    case 21:
-        attachInterrupt(digitalPinToInterrupt(cfg.drive_sensor_pin), drive_sensor_interrupt_r, CHANGE);
-        caster_r = this;
-        break;
 
-    default:
-        break;
-    }
 }
 
 int16_t Caster::getRotation()
@@ -89,23 +69,23 @@ void Caster::pingRotationMotor()
 {
     int time_to_rotate = 200;
     int pwm = PWM_MAX;
-    digitalWrite(cfg.rotation_motor.in1, sign1(pwm));
-    digitalWrite(cfg.rotation_motor.in2, sign2(pwm));
+    digitalWrite(cfg.rotation_motor.in1, RobotUtils::sign1(pwm));
+    digitalWrite(cfg.rotation_motor.in2, RobotUtils::sign2(pwm));
     analogWrite(cfg.rotation_motor.ena, abs(pwm));
     delay(time_to_rotate);
     pwm = 0;
-    digitalWrite(cfg.rotation_motor.in1, sign1(pwm));
-    digitalWrite(cfg.rotation_motor.in2, sign2(pwm));
+    digitalWrite(cfg.rotation_motor.in1, RobotUtils::sign1(pwm));
+    digitalWrite(cfg.rotation_motor.in2, RobotUtils::sign2(pwm));
     analogWrite(cfg.rotation_motor.ena, abs(pwm));
     delay(1000);
     pwm = -PWM_MAX;
-    digitalWrite(cfg.rotation_motor.in1, sign1(pwm));
-    digitalWrite(cfg.rotation_motor.in2, sign2(pwm));
+    digitalWrite(cfg.rotation_motor.in1, RobotUtils::sign1(pwm));
+    digitalWrite(cfg.rotation_motor.in2, RobotUtils::sign2(pwm));
     analogWrite(cfg.rotation_motor.ena, abs(pwm));
     delay(time_to_rotate);
     pwm = 0;
-    digitalWrite(cfg.rotation_motor.in1, sign1(pwm));
-    digitalWrite(cfg.rotation_motor.in2, sign2(pwm));
+    digitalWrite(cfg.rotation_motor.in1, RobotUtils::sign1(pwm));
+    digitalWrite(cfg.rotation_motor.in2, RobotUtils::sign2(pwm));
     analogWrite(cfg.rotation_motor.ena, abs(pwm));
     delay(1000);
 }
@@ -120,27 +100,14 @@ int16_t Caster::getDriveTicksDept()
     return drive_target;
 }
 
-void Caster::inc_drive_sensor_tick()
+void Caster::drive_sensor_tick()
 {
-    unsigned long now_ms = millis();
-    if ((drive_sensor_tick_last_update_ms + 2 ) <= now_ms)
+    int val = digitalRead(cfg.drive_sensor_pin);
+    if (val != last_drive_sensor_val)
     {
         drive_sensor_ticks++;
-        drive_sensor_tick_last_update_ms = now_ms;
+        last_drive_sensor_val = val;
     }
-}
-
-void Caster::drive_sensor_interrupt_fl()
-{
-    caster_fl->inc_drive_sensor_tick();
-}
-void Caster::drive_sensor_interrupt_fr()
-{
-    caster_fr->inc_drive_sensor_tick();
-}
-void Caster::drive_sensor_interrupt_r()
-{
-    caster_r->inc_drive_sensor_tick();
 }
 
 void Caster::pingDriveMotor()
@@ -148,29 +115,30 @@ void Caster::pingDriveMotor()
     TEST_MESSAGE("DRIVE");
     int time_to_rotate = 2000;
     int pwm = PWM_MAX;
-    digitalWrite(cfg.drive_motor.in1, sign1(pwm));
-    digitalWrite(cfg.drive_motor.in2, sign2(pwm));
+    digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(pwm));
+    digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(pwm));
     analogWrite(cfg.drive_motor.ena, abs(pwm));
     delay(time_to_rotate);
     pwm = 0;
-    digitalWrite(cfg.drive_motor.in1, sign1(pwm));
-    digitalWrite(cfg.drive_motor.in2, sign2(pwm));
+    digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(pwm));
+    digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(pwm));
     analogWrite(cfg.drive_motor.ena, abs(pwm));
     delay(1000);
     pwm = -PWM_MAX;
-    digitalWrite(cfg.drive_motor.in1, sign1(pwm));
-    digitalWrite(cfg.drive_motor.in2, sign2(pwm));
+    digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(pwm));
+    digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(pwm));
     analogWrite(cfg.drive_motor.ena, abs(pwm));
     delay(time_to_rotate);
     pwm = 0;
-    digitalWrite(cfg.drive_motor.in1, sign1(pwm));
-    digitalWrite(cfg.drive_motor.in2, sign2(pwm));
+    digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(pwm));
+    digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(pwm));
     analogWrite(cfg.drive_motor.ena, abs(pwm));
     delay(1000);
 }
 
 void Caster::setDriveTarget(int16_t drive_ticks)
 {
+    drive_current_frame_required_ticks = drive_ticks;
     drive_target += drive_ticks; // add requirement for new frame to current target
 }
 
@@ -185,7 +153,7 @@ void Caster::execute()
     int16_t p = rotation_target - current;
     long effort = p + (pid_i_rotation / 4);
     // Full speed rotation changes 145 rotation unit per 50ms
-    int pwm_rotation = map_cut(abs(effort),
+    int pwm_rotation = RobotUtils::map_cut(abs(effort),
                       ROTATION_TOLERANCE, // do not move if close enough to target [rot units]
                       600,                // if higher than that full thrust
                       80,                // do not use lower PWM as motor will not move anyway
@@ -211,19 +179,20 @@ void Caster::execute()
         pid_i_rotation = 0;
     }
     // set Rotation Motor
-    digitalWrite(cfg.rotation_motor.in1, sign1(effort));
-    digitalWrite(cfg.rotation_motor.in2, sign2(effort));
+    digitalWrite(cfg.rotation_motor.in1, RobotUtils::sign1(effort));
+    digitalWrite(cfg.rotation_motor.in2, RobotUtils::sign2(effort));
     analogWrite(cfg.rotation_motor.ena, pwm_rotation);
 
 
-    // Rotation PID controller
+    // Drive PID controller
     drive_target -= last_frame_ticks * last_frame_ticks_dir; // subtract what has been driven out from the target //PID P
+    drive_target = (drive_target > DRIVE_MAX_DEPT) ? DRIVE_MAX_DEPT * RobotUtils::sign(drive_target) : drive_target;
     long effort_drive = drive_target + (pid_i_drive / 4);
-    int pwm_drive = map_cut(abs(effort_drive),
-                      DRIVE_TOLERANCE, // do not move if close enough to target [ticks]
-                      50,              // if higher than that full thrust [ticks]
+    int16_t pwm_drive = RobotUtils::map_cut(abs(effort_drive),  //12 ticks per frame is full speed
+                      0,              // do not move if close enough to target [ticks]
+                      12,             // if higher than that full thrust [ticks]
                       90,             // do not use lower PWM as motor will not move anyway
-                      PWM_MAX);        // set Drive Motor
+                      PWM_MAX);       // set Drive Motor
     // Smooth pwm start (not stop/break) if start is too abrupt
     if ( (pwm_drive - pwm_drive_prev) > 0)
     {
@@ -240,18 +209,19 @@ void Caster::execute()
         pid_i_drive = 0;
     }
 
-    if (abs(drive_target) < ROTATION_TOLERANCE)
+    if ( (drive_current_frame_required_ticks == 0) && (abs(drive_target) < DRIVE_TOLERANCE) )
     {
-        drive_target = 0;
+        drive_target = 0;  //expected no move and robot within tolerance from target -> stop explicitly
         pid_i_drive = 0;
         pwm_drive = 0;
+        pwm_drive_prev = 0;
     }
 
     // set drive motor
-    digitalWrite(cfg.drive_motor.in1, sign1(drive_target));
-    digitalWrite(cfg.drive_motor.in2, sign2(drive_target));
+    digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(drive_target));
+    digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(drive_target));
     analogWrite(cfg.drive_motor.ena, abs(pwm_drive));
-    last_frame_ticks_dir = sign(drive_target);  // will be used next frame to determine ticks to add or sub
+    last_frame_ticks_dir = RobotUtils::sign(drive_target);  // will be used next frame to determine ticks to add or sub
     // snprintf(buffer, sizeof(buffer), "%d;%d;%d", drive_target, pid_i_drive, pwm_drive);
     // TEST_MESSAGE(buffer);
 
@@ -270,9 +240,3 @@ void Caster::stopMotors()
     analogWrite(cfg.rotation_motor.ena, 0);
 }
 
-void Caster::stopAllCastersMotors()
-{
-    caster_fl->stopMotors();
-    caster_fr->stopMotors();
-    caster_r->stopMotors();
-}
