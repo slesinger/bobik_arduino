@@ -1,6 +1,6 @@
 #include "bobik.h"
 #include <math.h>
-#include <unity.h>
+// #include <unity.h>
 
 Caster *Bobik::caster_fl;
 Caster *Bobik::caster_fr;
@@ -179,19 +179,19 @@ void Bobik::getCmdVelDebug(float *res)
     res[0] = desired_frame_config.base.caster_fl.x;
     res[1] = desired_frame_config.base.caster_fl.y;
     // res[2] = desired_frame_config.base.caster_fl.gamma;
-    res[2] = (float)(caster_fl->pwm_drive_prev);
+    res[2] = (float)(caster_fl->debug_int/1000.0);
     res[3] = desired_frame_config.base.caster_fl.speed;
 
     res[4] = desired_frame_config.base.caster_fr.x;
     res[5] = desired_frame_config.base.caster_fr.y;
     // res[6] = desired_frame_config.base.caster_fr.gamma;
-    res[6] = (float)(caster_fr->pwm_drive_prev);
+    res[6] = (float)(caster_fr->debug_int/1000.0);
     res[7] = desired_frame_config.base.caster_fr.speed;
 
     res[8] = desired_frame_config.base.caster_r.x;
     res[9] = desired_frame_config.base.caster_r.y;
     // res[10] = desired_frame_config.base.caster_r.gamma;
-    res[10] = (float)(caster_r->pwm_drive_prev);
+    res[10] = (float)(caster_r->debug_int/1000.0);
     res[11] = desired_frame_config.base.caster_r.speed;
 }
 

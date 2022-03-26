@@ -1,6 +1,10 @@
+/*
+
+this file is not included by avr-g++ . Content moved to .h
+
 #include "robot_utils.h"
 
-void RobotUtils::RobotUtils(){}
+RobotUtils::RobotUtils(){}
 
 int8_t RobotUtils::sign(int x) 
 {
@@ -23,3 +27,4 @@ long RobotUtils::map_cut(long x, long in_min, long in_max, long out_min, long ou
     return (x - in_min) * (float)(out_max - out_min) / (float)(in_max - in_min) + out_min;
 }
 
+*/

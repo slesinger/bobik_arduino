@@ -395,9 +395,22 @@ void test_optimize_rotation()
 void test_map_cut()
 {
   int16_t res;
-  res  = RobotUtils::map_cut(-80000,1 ,12, 90, 255);
-  UNITY_TEST_ASSERT_EQUAL_INT(-255, res,1,"map_cut");
+  res  = RobotUtils::map_cut(-80000, 1 ,12, 90, 255);
+  UNITY_TEST_ASSERT_EQUAL_INT(90, res,1, "map_cut");
+  res  = RobotUtils::map_cut(0, 1, 12, 90, 255);
+  UNITY_TEST_ASSERT_EQUAL_INT(90, res, 1, "map_cut");
+  res  = RobotUtils::map_cut(1, 1, 12, 90, 255);
+  UNITY_TEST_ASSERT_EQUAL_INT(90, res, 1, "map_cut");
+  res  = RobotUtils::map_cut(0, 0, 12, 0, 255);
+  UNITY_TEST_ASSERT_EQUAL_INT(0, res, 1, "map_cut");
+  res  = RobotUtils::map_cut(10, 1, 12, 90, 255);
+  UNITY_TEST_ASSERT_EQUAL_INT(225, res, 1, "map_cut");
+  res  = RobotUtils::map_cut(12, 1, 12, 90, 255);
+  UNITY_TEST_ASSERT_EQUAL_INT(255, res, 1, "map_cut");
+  res  = RobotUtils::map_cut(280, 1, 12, 90, 255);
+  UNITY_TEST_ASSERT_EQUAL_INT(255, res, 1, "map_cut");
 }
+
 void setup()
 {
   // NOTE!!! Wait for >2 secs
@@ -452,7 +465,7 @@ void setup()
   RUN_TEST(test_base_simplify_rad);
   RUN_TEST(test_optimize_rotation);
   RUN_TEST(test_map_cut);
-  // RUN_TEST(test_hl_scenario);
+  RUN_TEST(test_hl_scenario);
   #ifdef TEST_MOTORS
   Bobik::stopAllCastersMotors();
   #endif

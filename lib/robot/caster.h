@@ -3,9 +3,9 @@
 
 #include <AS5048A.h> //absolute rotation encoder
 #include "robot_config_types.h"
-#include "component.h"
+// #include "component.h"
 
-class Caster : public Component
+class Caster // : public Component
 {
 public:
     Caster(Caster_t caster_cfg);
@@ -74,7 +74,15 @@ public:
      * 
      */
     void drive_sensor_tick();
+
+    /**
+     * @brief For smoothing PWM drive
+     * 
+     */
     int16_t pwm_drive_prev;  // dej zpatky do private
+
+    
+    int16_t debug_int;
 
 private:
     Caster_t cfg;

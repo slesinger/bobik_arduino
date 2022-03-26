@@ -1,4 +1,4 @@
-#include <unity.h>
+// #include <unity.h>
 #include "caster.h"
 #include "robot_utils.h"
 
@@ -6,6 +6,7 @@
 #define ROTATION_TOLERANCE 10
 #define DRIVE_TOLERANCE 10
 #define DRIVE_MAX_DEPT 100
+#define DRIVE_MAX_INTDEPT 10  // add overflow of ticks from last frames (cummulative) to all small speed to overcome excitation energy for motor. It is kept small; set to 0 if robot moves
 #define PWM_MAX 255
 
 Caster::Caster(Caster_t caster_cfg)
@@ -112,7 +113,7 @@ void Caster::drive_sensor_tick()
 
 void Caster::pingDriveMotor()
 {
-    TEST_MESSAGE("DRIVE");
+    // TEST_MESSAGE("DRIVE");
     int time_to_rotate = 2000;
     int pwm = PWM_MAX;
     digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(pwm));
@@ -186,28 +187,31 @@ void Caster::execute()
 
     // Drive PID controller
     drive_target -= last_frame_ticks * last_frame_ticks_dir; // subtract what has been driven out from the target //PID P
-    drive_target = (drive_target > DRIVE_MAX_DEPT) ? DRIVE_MAX_DEPT * RobotUtils::sign(drive_target) : drive_target;
-    long effort_drive = drive_target + (pid_i_drive / 4);
-    int16_t pwm_drive = RobotUtils::map_cut(abs(effort_drive),  //12 ticks per frame is full speed
-                      0,              // do not move if close enough to target [ticks]
-                      12,             // if higher than that full thrust [ticks]
-                      90,             // do not use lower PWM as motor will not move anyway
-                      PWM_MAX);       // set Drive Motor
-    // Smooth pwm start (not stop/break) if start is too abrupt
-    if ( (pwm_drive - pwm_drive_prev) > 0)
-    {
-        pwm_drive = pwm_drive_prev + (pwm_drive - pwm_drive_prev) / 4;
-    }
-    pwm_drive_prev = pwm_drive;
-
+    long effort_drive = drive_target + pid_i_drive;  // add dept from last frame if robot was not moving yet had to, slowly
+    effort_drive = (effort_drive > DRIVE_MAX_DEPT) ? DRIVE_MAX_DEPT * RobotUtils::sign(effort_drive) : effort_drive; // do not cummulate dept too much
     if (last_frame_ticks < 1)
     {
-        pid_i_drive += drive_target; // no move since last frame
+        pid_i_drive += drive_current_frame_required_ticks; // no move since last frame
+        pid_i_drive = (pid_i_drive > DRIVE_MAX_INTDEPT) ? DRIVE_MAX_INTDEPT * RobotUtils::sign(pid_i_drive) : pid_i_drive; // do not cummulate integration too much
     }
     else
     {
         pid_i_drive = 0;
     }
+
+    int16_t pwm_drive = RobotUtils::map_cut(abs(effort_drive),  //12 ticks per frame is full speed
+                      0,              // do not move if close enough to target [ticks]
+                      12,             // if higher than that full thrust [ticks]
+                      0,             // do not use lower PWM as motor will not move anyway
+                      PWM_MAX);       // set Drive Motor
+
+    // Smooth pwm start (not stop/break) if start is too abrupt
+    if ( (pwm_drive - pwm_drive_prev) > 0)
+    {
+        pwm_drive = round(pwm_drive_prev + (float)(pwm_drive - pwm_drive_prev) / 4.0);  //modify previous value by 25% only
+    }
+    pwm_drive_prev = pwm_drive;
+debug_int = last_frame_ticks;
 
     if ( (drive_current_frame_required_ticks == 0) && (abs(drive_target) < DRIVE_TOLERANCE) )
     {
