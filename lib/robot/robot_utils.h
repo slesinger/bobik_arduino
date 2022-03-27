@@ -35,7 +35,7 @@ public:
      */
     static int sign2(int16_t x)
     {
-        return (x < 0) ? HIGH : LOW;
+        return (x <= 0) ? HIGH : LOW;
     }
 
     /**

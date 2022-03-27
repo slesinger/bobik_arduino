@@ -1,6 +1,7 @@
 // #include <unity.h>
 #include "caster.h"
 #include "robot_utils.h"
+// #include "robot_config.h"
 
 #define AVG_SIZE 7 // how many sensor readings to average
 #define ROTATION_TOLERANCE 10
@@ -58,6 +59,11 @@ int16_t Caster::getRotation()
         sum += rotation;
     }
     return (int16_t)(sum / (float)AVG_SIZE);
+}
+
+float Caster::getRotationInRad()
+{
+    return getRotation() * 1;
 }
 
 void Caster::setRotationTarget(int16_t rotation_units)
@@ -186,7 +192,8 @@ void Caster::execute()
 
 
     // Drive PID controller
-    drive_target -= last_frame_ticks * last_frame_ticks_dir; // subtract what has been driven out from the target //PID P
+    drive_target = drive_current_frame_required_ticks; // subtract what has been driven out from the target //PID P
+    // drive_target -= last_frame_ticks * last_frame_ticks_dir; // subtract what has been driven out from the target //PID P
     long effort_drive = drive_target + pid_i_drive;  // add dept from last frame if robot was not moving yet had to, slowly
     effort_drive = (effort_drive > DRIVE_MAX_DEPT) ? DRIVE_MAX_DEPT * RobotUtils::sign(effort_drive) : effort_drive; // do not cummulate dept too much
     if (last_frame_ticks < 1)
@@ -211,7 +218,6 @@ void Caster::execute()
         pwm_drive = round(pwm_drive_prev + (float)(pwm_drive - pwm_drive_prev) / 4.0);  //modify previous value by 25% only
     }
     pwm_drive_prev = pwm_drive;
-debug_int = last_frame_ticks;
 
     if ( (drive_current_frame_required_ticks == 0) && (abs(drive_target) < DRIVE_TOLERANCE) )
     {
@@ -220,11 +226,21 @@ debug_int = last_frame_ticks;
         pwm_drive = 0;
         pwm_drive_prev = 0;
     }
+debug_int = drive_target;
 
     // set drive motor
-    digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(drive_target));
-    digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(drive_target));
-    analogWrite(cfg.drive_motor.ena, abs(pwm_drive));
+    // if (drive_target > 0)
+    // {
+    //     digitalWrite(cfg.drive_motor.in1, HIGH);  //podezrlej
+    //     digitalWrite(cfg.drive_motor.in2, LOW); //ok
+    // }
+    // else {
+    //     digitalWrite(cfg.drive_motor.in1, LOW);  //podezrlej
+    //     digitalWrite(cfg.drive_motor.in2, HIGH); //ok
+    // }
+    digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(drive_target));  //podezrlej
+    digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(drive_target)); //ok
+    analogWrite(cfg.drive_motor.ena, abs(pwm_drive));  //abs() is not needed here, just safety
     last_frame_ticks_dir = RobotUtils::sign(drive_target);  // will be used next frame to determine ticks to add or sub
     // snprintf(buffer, sizeof(buffer), "%d;%d;%d", drive_target, pid_i_drive, pwm_drive);
     // TEST_MESSAGE(buffer);

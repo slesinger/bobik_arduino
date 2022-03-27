@@ -159,10 +159,9 @@ void Bobik::setCmdVel(float x, float y, float gamma)
     desired_frame_config.base.caster_r.speed = spdc;
 
     // 1 go normal, -1 go reverse
-    float readrot = 0.0;
-    float reverse_speed_a = optimize_rotation(readrot, &dega);
-    float reverse_speed_b = optimize_rotation(readrot, &degb);
-    float reverse_speed_c = optimize_rotation(readrot, &degc);
+    float reverse_speed_a = optimize_rotation(caster_fl->getRotation() * CASTER_UNITS2RAD, &dega);
+    float reverse_speed_b = optimize_rotation(caster_fr->getRotation() * CASTER_UNITS2RAD, &degb);
+    float reverse_speed_c = optimize_rotation(caster_r->getRotation() * CASTER_UNITS2RAD, &degc);
 
     caster_fl->setRotationTarget(dega * CASTER_RAD2UNITS);
     caster_fr->setRotationTarget(degb * CASTER_RAD2UNITS);

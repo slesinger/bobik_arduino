@@ -28,7 +28,8 @@
     #define DEG_B M_PI / -3.0
     #define DEG_C M_PI
 
-    #define CASTER_RAD2UNITS -8192.0/M_PI
+    #define CASTER_RAD2UNITS -8192.0 / M_PI
+    #define CASTER_UNITS2RAD M_PI / -8192.0
     #define CASTER_DRIVE_MIN_SPEED 0.03
     #define CASTER_DRIVE_MAX_SPEED 0.4
     #define CASTER_METERS2TICKS (2*120) / (0.123 * M_PI)   // (falling + raising edge) * 120 holes / (D * PI)

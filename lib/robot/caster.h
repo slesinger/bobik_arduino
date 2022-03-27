@@ -18,6 +18,13 @@ public:
     int16_t getRotation();
 
     /**
+     * @brief Same as getrotation but results in in radians
+     * 
+     * @return float Rotation in radians
+     */
+    float getRotationInRad();
+
+    /**
      * @brief Set the Rotation Target value
      *
      * @param rotation_units value from -8191 to 8191. Negative values rotating left. Ex. 4196 rotates 90deg right. 0 is center pointing forward.
@@ -81,7 +88,7 @@ public:
      */
     int16_t pwm_drive_prev;  // dej zpatky do private
 
-    
+
     int16_t debug_int;
 
 private:
