@@ -255,20 +255,20 @@ int f2i(float f)
 // pio test | python test/plot_base.py
 void hl_casters(int num_frames, float x, float y, float g, int enable_motors)
 {
-  char buffer[128];
-  float dbg[12];
+  // char buffer[128];
+  // float dbg[12];
 
   // simulate arduino loop()
   for (int t = 0; t < num_frames; t++) // total test run length
   {
     robot.setCmdVel(x, y, g); // forward, strafe left, rotate left
-    robot.getCmdVelDebug(dbg);
+    // robot.getCmdVelDebug(dbg);
     int dept_fl = robot.caster_fl->getDriveTicksDept();
     int dept_fr = robot.caster_fr->getDriveTicksDept();
     int dept_r = robot.caster_r->getDriveTicksDept();
-    snprintf(buffer, sizeof(buffer), "Base config;%d; %d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d | %d;%d;%d", t, f2i(x), f2i(y), f2i(g),
-             f2i(dbg[0]), f2i(dbg[1]), f2i(dbg[2]), f2i(dbg[3]), f2i(dbg[4]), f2i(dbg[5]), f2i(dbg[6]), f2i(dbg[7]), f2i(dbg[8]), f2i(dbg[9]), f2i(dbg[10]), f2i(dbg[11]), dept_fl, dept_fr, dept_r);
-    TEST_MESSAGE(buffer);
+    // snprintf(buffer, sizeof(buffer), "Base config;%d; %d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d | %d;%d;%d", t, f2i(x), f2i(y), f2i(g),
+            //  f2i(dbg[0]), f2i(dbg[1]), f2i(dbg[2]), f2i(dbg[3]), f2i(dbg[4]), f2i(dbg[5]), f2i(dbg[6]), f2i(dbg[7]), f2i(dbg[8]), f2i(dbg[9]), f2i(dbg[10]), f2i(dbg[11]), dept_fl, dept_fr, dept_r);
+    // TEST_MESSAGE(buffer);
 
     if (enable_motors == true)
       robot.execute();
@@ -287,65 +287,65 @@ void test_hl_scenario()
   TEST_MESSAGE(buffer);
   // frames, cmd_vel x, y, gamma
   
-  // drive speed test
-  // hl_casters(20*1, 0.1, 0.0, 0.0, motors);
-  // hl_casters(20*5, 0.2, 0.0, 0.0, motors);
-  // hl_casters(20*1, 0.3, 0.0, 0.0, motors);
-  // hl_casters(20*1, 0.4, 0.0, 0.0, motors);
-  // hl_casters(20*1, 0.3, 0.0, 0.0, motors);
-  // hl_casters(20*1, 0.2, 0.0, 0.0, motors);
-  // hl_casters(20*1, 0.1, 0.0, 0.0, motors);
-  // hl_casters(20*1, 0.0, 0.0, 0.0, motors);
+  TEST_MESSAGE("Drive: Speed test");
+  hl_casters(20*1, 0.1, 0.0, 0.0, motors);
+  hl_casters(20*5, 0.2, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.3, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.4, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.3, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.2, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.1, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.0, 0.0, 0.0, motors);
   
-  // drive speed test backwards
-  // hl_casters(20*1, -0.1, 0.0, 0.0, motors);
-  // hl_casters(20*1, -0.2, 0.0, 0.0, motors);
-  // hl_casters(20*1, -0.3, 0.0, 0.0, motors);
-  // hl_casters(20*1, -0.4, 0.0, 0.0, motors);
-  // hl_casters(20*1, -0.3, 0.0, 0.0, motors);
-  // hl_casters(20*1, -0.2, 0.0, 0.0, motors);
-  // hl_casters(20*1, -0.1, 0.0, 0.0, motors);
-  // hl_casters(20*1, 0.0, 0.0, 0.0, motors);
+  TEST_MESSAGE("Drive: speed test backwards");
+  hl_casters(20*1, -0.1, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.2, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.3, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.4, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.3, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.2, 0.0, 0.0, motors);
+  hl_casters(20*1, -0.1, 0.0, 0.0, motors);
+  hl_casters(20*1, 0.0, 0.0, 0.0, motors);
   
-  // fwd - strafe left - bck - strafe right - fwd for init
-  // hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
-  // hl_casters(20 * 4, 0.0, -0.2, 0.0, motors);
-  // hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);
-  // hl_casters(20 * 4, 0.0, 0.3, 0.0, motors);
+  TEST_MESSAGE("Drive: fwd - strafe left - bck - strafe right - fwd for init");
+  hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
+  hl_casters(20 * 4, 0.0, -0.2, 0.0, motors);
+  hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);
+  hl_casters(20 * 4, 0.0, 0.3, 0.0, motors);
 
-  // fwd + alternate slight left-right rotations
-  // hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
-  // hl_casters(20 * 4, 0.4, 0.0, 0.5, motors);
-  // hl_casters(20 * 4, 0.4, 0.0, -0.5, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
+  TEST_MESSAGE("Drive: fwd + alternate slight left-right rotations");
+  hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
+  hl_casters(20 * 4, 0.4, 0.0, 0.5, motors);
+  hl_casters(20 * 4, 0.4, 0.0, -0.5, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
 
-  // fwd, rot left on spot, rot right on spot, fwd
-  // hl_casters(20 * 1, 0.2, 0.0, 0.0, motors);
-  // hl_casters(20 * 4, 0.0, 0.0, 1.0, motors);
-  // hl_casters(1, 0.0, 0.0, 0.0, motors);
-  // hl_casters(20 * 4, 0.0, 0.0, -1.0, motors);
+  TEST_MESSAGE("Drive: fwd, rot left on spot, rot right on spot, fwd");
+  hl_casters(20 * 1, 0.2, 0.0, 0.0, motors);
+  hl_casters(20 * 4, 0.0, 0.0, 1.0, motors);
+  hl_casters(1, 0.0, 0.0, 0.0, motors);
+  hl_casters(20 * 4, 0.0, 0.0, -1.0, motors);
 
-  // full fwd + onboard rotation left, decrease fwd animation
-  // hl_casters(20 * 1, 0.4, 0.0, 0.1, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 0.2, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 0.3, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 0.4, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 0.5, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 0.6, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 0.7, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 0.8, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 0.9, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 1.0, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 1.5, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 2.0, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 2.5, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 3.0, motors);
-  // hl_casters(20 * 1, 0.4, 0.0, 3.5, motors);
-  // hl_casters(20 * 1, 0.2, 0.0, 3.5, motors);
-  // hl_casters(20 * 1, 0.0, 0.0, 3.5, motors);
+  TEST_MESSAGE("Drive: full fwd + onboard rotation left, decrease fwd animation");
+  hl_casters(20 * 1, 0.4, 0.0, 0.1, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 0.2, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 0.3, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 0.4, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 0.5, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 0.6, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 0.7, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 0.8, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 0.9, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 1.0, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 1.5, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 2.0, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 2.5, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 3.0, motors);
+  hl_casters(20 * 1, 0.4, 0.0, 3.5, motors);
+  hl_casters(20 * 1, 0.2, 0.0, 3.5, motors);
+  hl_casters(20 * 1, 0.0, 0.0, 3.5, motors);
 
-  // slow fwd and fast rotation (like PR2 demo)
-  // hl_casters(20 * 10, 0.15, 0.15, 1.5, motors);  //not able to judge if this works while on test bench
+  TEST_MESSAGE("Drive: slow fwd and fast rotation (like PR2 demo)");
+  hl_casters(20 * 10, 0.15, 0.15, 1.5, motors);  //not able to judge if this works while on test bench
 
   // stop
   hl_casters(20 * 2, 0.0, 0.0, 0.0, motors); 
