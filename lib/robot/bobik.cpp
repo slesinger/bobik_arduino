@@ -8,6 +8,7 @@ Caster *Bobik::caster_r;
 
 Bobik::Bobik()
 {
+    driveStoppedDueToRotation = false;
     read_config();
 
     // Casters
@@ -114,9 +115,9 @@ void Bobik::setCmdVel(float x, float y, float gamma)
         desired_frame_config.base.caster_r.y = 0;
         desired_frame_config.base.caster_r.speed = 0;
 
-        caster_fl->setDriveTarget(0);
-        caster_fr->setDriveTarget(0);
-        caster_r->setDriveTarget(0);
+        caster_fl->setDriveTarget(0, false);
+        caster_fr->setDriveTarget(0, false);
+        caster_r->setDriveTarget(0, false);
         return;
     }
 
@@ -159,17 +160,35 @@ void Bobik::setCmdVel(float x, float y, float gamma)
     desired_frame_config.base.caster_r.speed = spdc;
 
     // 1 go normal, -1 go reverse
-    float reverse_speed_a = optimize_rotation(caster_fl->getRotation() * CASTER_UNITS2RAD, &dega);
-    float reverse_speed_b = optimize_rotation(caster_fr->getRotation() * CASTER_UNITS2RAD, &degb);
-    float reverse_speed_c = optimize_rotation(caster_r->getRotation() * CASTER_UNITS2RAD, &degc);
+    float curr_rot_fl = caster_fl->getRotation() * CASTER_UNITS2RAD;
+    float curr_rot_fr = caster_fr->getRotation() * CASTER_UNITS2RAD;
+    float curr_rot_r = caster_r->getRotation() * CASTER_UNITS2RAD;
+    float reverse_speed_a = optimize_rotation(curr_rot_fl, &dega);
+    float reverse_speed_b = optimize_rotation(curr_rot_fr, &degb);
+    float reverse_speed_c = optimize_rotation(curr_rot_r, &degc);
 
     caster_fl->setRotationTarget(dega * CASTER_RAD2UNITS);
     caster_fr->setRotationTarget(degb * CASTER_RAD2UNITS);
     caster_r->setRotationTarget(degc * CASTER_RAD2UNITS);
 
-    caster_fl->setDriveTarget(reverse_speed_a * spda * CASTER_METERS2TICKS / FPS);
-    caster_fr->setDriveTarget(reverse_speed_b * spdb * CASTER_METERS2TICKS / FPS);
-    caster_r->setDriveTarget(reverse_speed_c * spdc * CASTER_METERS2TICKS / FPS);
+    if (
+        (abs(dega - curr_rot_fl) > STOP_DUE_ROTATION_DIFF) ||
+        (abs(degb - curr_rot_fr) > STOP_DUE_ROTATION_DIFF) ||
+        (abs(degc - curr_rot_r) > STOP_DUE_ROTATION_DIFF)
+    )
+    {
+        driveStoppedDueToRotation = true;
+        caster_fl->setDriveTarget(0, driveStoppedDueToRotation);
+        caster_fr->setDriveTarget(0, driveStoppedDueToRotation);
+        caster_r->setDriveTarget(0, driveStoppedDueToRotation);
+    }
+    else
+    {
+        driveStoppedDueToRotation = false;
+        caster_fl->setDriveTarget(reverse_speed_a * spda * CASTER_METERS2TICKS / FPS, driveStoppedDueToRotation);
+        caster_fr->setDriveTarget(reverse_speed_b * spdb * CASTER_METERS2TICKS / FPS, driveStoppedDueToRotation);
+        caster_r->setDriveTarget(reverse_speed_c * spdc * CASTER_METERS2TICKS / FPS, driveStoppedDueToRotation);
+    }
 
 }
 
@@ -177,20 +196,20 @@ void Bobik::getCmdVelDebug(float *res)
 {
     res[0] = desired_frame_config.base.caster_fl.x;
     res[1] = desired_frame_config.base.caster_fl.y;
-    // res[2] = desired_frame_config.base.caster_fl.gamma;
-    res[2] = (float)(caster_fl->debug_int/1000.0);
+    res[2] = desired_frame_config.base.caster_fl.gamma;
+    // res[2] = (float)(caster_fl->debug_int/1000.0);
     res[3] = desired_frame_config.base.caster_fl.speed;
 
     res[4] = desired_frame_config.base.caster_fr.x;
     res[5] = desired_frame_config.base.caster_fr.y;
-    // res[6] = desired_frame_config.base.caster_fr.gamma;
-    res[6] = (float)(caster_fr->debug_int/1000.0);
+    res[6] = desired_frame_config.base.caster_fr.gamma;
+    // res[6] = (float)(caster_fr->debug_int/1000.0);
     res[7] = desired_frame_config.base.caster_fr.speed;
 
     res[8] = desired_frame_config.base.caster_r.x;
     res[9] = desired_frame_config.base.caster_r.y;
-    // res[10] = desired_frame_config.base.caster_r.gamma;
-    res[10] = (float)(caster_r->debug_int/1000.0);
+    res[10] = desired_frame_config.base.caster_r.gamma;
+    // res[10] = (float)(caster_r->debug_int/1000.0);
     res[11] = desired_frame_config.base.caster_r.speed;
 }
 

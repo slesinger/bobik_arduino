@@ -52,6 +52,12 @@ public:
     float simplify_rad(float rad);
     int optimize_rotation(float current, float *target);
 
+    /**
+     * @brief Normally false. If true, it means casters are performing rotation and direction of new movement is far from current caster's direction. Hence casters are likely in unacceptable configuration. All drives are stopped during that time to avoid braking of casters.
+     * 
+     */
+    bool driveStoppedDueToRotation;
+
 
 private:
     RobotFrameConfig desired_frame_config;

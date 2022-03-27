@@ -18,13 +18,6 @@ public:
     int16_t getRotation();
 
     /**
-     * @brief Same as getrotation but results in in radians
-     * 
-     * @return float Rotation in radians
-     */
-    float getRotationInRad();
-
-    /**
      * @brief Set the Rotation Target value
      *
      * @param rotation_units value from -8191 to 8191. Negative values rotating left. Ex. 4196 rotates 90deg right. 0 is center pointing forward.
@@ -62,7 +55,7 @@ public:
      *
      * @param drive_ticks positive number: forward, negative: backward
      */
-    void setDriveTarget(int16_t drive_ticks);
+    void setDriveTarget(int16_t drive_ticks, bool stoppedFlag);
 
     /**
      * @brief Runs all caster logic for current frame. !Read getDriveTicks() before calling execute()
@@ -92,12 +85,17 @@ public:
     int16_t debug_int;
 
 private:
+    /**
+     * @brief Pointer to Bobik, the root object. This can be used for referencing.
+     * 
+     */
     Caster_t cfg;
     AS5048A *rotation_sensor;
 
     int16_t rotation_target;
     int16_t pid_prev_rotation;
     int16_t pid_i_rotation;
+    bool driveStoppedDueToRotation;
     uint16_t drive_sensor_ticks;
     int last_drive_sensor_val;
     int8_t last_frame_ticks_dir;

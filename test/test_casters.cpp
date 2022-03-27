@@ -198,8 +198,8 @@ void test_drive_1000ticks_r(void)
 {
   Caster *caster = robot.caster_r;
   uint32_t ticks_actual = 0;
-#define DRIVE_TARGET 1000
-  caster->setDriveTarget(DRIVE_TARGET);
+  #define DRIVE_TARGET 1000
+  caster->setDriveTarget(DRIVE_TARGET, false);
   for (int t = 0; t < 20 * 10; t++) // total test run length
   {
     ticks_actual += caster->getDriveTicks();
@@ -218,9 +218,9 @@ void test_drive_fwd(void)
   uint32_t ticks_actual_fr = 0;
   uint32_t ticks_actual_r = 0;
 #define DRIVE_TARGET_FWD 240 * 3
-  robot.caster_fl->setDriveTarget(DRIVE_TARGET_FWD);
-  robot.caster_fr->setDriveTarget(DRIVE_TARGET_FWD);
-  robot.caster_r->setDriveTarget(DRIVE_TARGET_FWD);
+  robot.caster_fl->setDriveTarget(DRIVE_TARGET_FWD, false);
+  robot.caster_fr->setDriveTarget(DRIVE_TARGET_FWD, false);
+  robot.caster_r->setDriveTarget(DRIVE_TARGET_FWD, false);
 
   for (int t = 0; t < 20 * 10; t++) // total test run length
   {
@@ -306,12 +306,15 @@ void test_hl_scenario()
   hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);
   hl_casters(20 * 4, 0.0, 0.3, 0.0, motors);
 
+  // fwd, rot left on spot, rot right on spot, fwd
+  // fwd + alternate slight left-right rotations
+  // full fwd + onboard rotation left, decrease fwd animation
+  // slow fwd and fast rotation (like PR2 demo)
+
   // hl_casters(20 * 1, 0.0, 0.0, 0.0, motors);
   // hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);
   // hl_casters(20 * 4, 0.2, 0.0, 0.0, motors);
   // hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);
-
-
 
   // hl_casters(20 * 4, -0.4, 0.0, 0.0, motors);
   // hl_casters(20 * 4, 0.0, -0.4, 0.0, motors);

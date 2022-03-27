@@ -1,4 +1,4 @@
-#include <unity.h>
+// #include <unity.h>
 #include "caster.h"
 #include "robot_utils.h"
 
@@ -15,6 +15,7 @@ Caster::Caster(Caster_t caster_cfg)
     rotation_target = 0;
     pid_prev_rotation = 0;
     pid_i_rotation = 0;
+    driveStoppedDueToRotation = false;
     drive_sensor_ticks = 0;
     drive_sensor_tick_last_update_ms = 0;
     drive_target = 0;
@@ -58,11 +59,6 @@ int16_t Caster::getRotation()
         sum += rotation;
     }
     return (int16_t)(sum / (float)AVG_SIZE);
-}
-
-float Caster::getRotationInRad()
-{
-    return getRotation() * 1;
 }
 
 void Caster::setRotationTarget(int16_t rotation_units)
@@ -142,8 +138,9 @@ void Caster::pingDriveMotor()
     delay(1000);
 }
 
-void Caster::setDriveTarget(int16_t drive_ticks)
+void Caster::setDriveTarget(int16_t drive_ticks, bool stoppedFlag)
 {
+    driveStoppedDueToRotation = stoppedFlag;
     drive_current_frame_required_ticks = drive_ticks;
     drive_target += drive_ticks; // add requirement for new frame to current target
 }
@@ -153,7 +150,7 @@ void Caster::execute()
     uint16_t last_frame_ticks = drive_sensor_ticks;
     drive_sensor_ticks = 0;  //make clear cut for cummulated ticks for past frame. Start new frame since now
 
-    char buffer [128];
+    // char buffer [128];
     // Rtotation PID controller
     int16_t current = this->getRotation();
     int16_t p = rotation_target - current;
@@ -195,7 +192,7 @@ void Caster::execute()
     // drive_target -= last_frame_ticks * last_frame_ticks_dir; // subtract what has been driven out from the target //PID P
     long effort_drive = drive_target + pid_i_drive;  // add dept from last frame if robot was not moving yet had to, slowly
     effort_drive = (effort_drive > DRIVE_MAX_DEPT) ? DRIVE_MAX_DEPT * RobotUtils::sign(effort_drive) : effort_drive; // do not cummulate dept too much
-    if (last_frame_ticks < 1)
+    if ( (last_frame_ticks < 1) && (driveStoppedDueToRotation == false) )
     {
         pid_i_drive += drive_current_frame_required_ticks; // no move since last frame
         pid_i_drive = (pid_i_drive > DRIVE_MAX_INTDEPT) ? DRIVE_MAX_INTDEPT * RobotUtils::sign(pid_i_drive) : pid_i_drive; // do not cummulate integration too much
@@ -225,14 +222,14 @@ void Caster::execute()
         pwm_drive = 0;
         pwm_drive_prev = 0;
     }
-debug_int = drive_target;
+// debug_int = drive_target;
 
     digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(drive_target));
     digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(drive_target));
     analogWrite(cfg.drive_motor.ena, abs(pwm_drive));  //abs() is not needed here, just safety
     last_frame_ticks_dir = RobotUtils::sign(drive_target);  // will be used next frame to determine ticks to add or sub
-    snprintf(buffer, sizeof(buffer), "%d;%d;%d", RobotUtils::sign1(drive_target), RobotUtils::sign2(drive_target), pwm_drive);
-    TEST_MESSAGE(buffer);
+    // snprintf(buffer, sizeof(buffer), "%d;%d;%d", RobotUtils::sign1(drive_target), RobotUtils::sign2(drive_target), pwm_drive);
+    // TEST_MESSAGE(buffer);
 
 }
 
