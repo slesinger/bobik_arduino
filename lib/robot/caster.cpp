@@ -1,7 +1,6 @@
-// #include <unity.h>
+#include <unity.h>
 #include "caster.h"
 #include "robot_utils.h"
-// #include "robot_config.h"
 
 #define AVG_SIZE 7 // how many sensor readings to average
 #define ROTATION_TOLERANCE 10
@@ -154,7 +153,7 @@ void Caster::execute()
     uint16_t last_frame_ticks = drive_sensor_ticks;
     drive_sensor_ticks = 0;  //make clear cut for cummulated ticks for past frame. Start new frame since now
 
-    // char buffer [128];
+    char buffer [128];
     // Rtotation PID controller
     int16_t current = this->getRotation();
     int16_t p = rotation_target - current;
@@ -228,22 +227,12 @@ void Caster::execute()
     }
 debug_int = drive_target;
 
-    // set drive motor
-    // if (drive_target > 0)
-    // {
-    //     digitalWrite(cfg.drive_motor.in1, HIGH);  //podezrlej
-    //     digitalWrite(cfg.drive_motor.in2, LOW); //ok
-    // }
-    // else {
-    //     digitalWrite(cfg.drive_motor.in1, LOW);  //podezrlej
-    //     digitalWrite(cfg.drive_motor.in2, HIGH); //ok
-    // }
-    digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(drive_target));  //podezrlej
-    digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(drive_target)); //ok
+    digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(drive_target));
+    digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(drive_target));
     analogWrite(cfg.drive_motor.ena, abs(pwm_drive));  //abs() is not needed here, just safety
     last_frame_ticks_dir = RobotUtils::sign(drive_target);  // will be used next frame to determine ticks to add or sub
-    // snprintf(buffer, sizeof(buffer), "%d;%d;%d", drive_target, pid_i_drive, pwm_drive);
-    // TEST_MESSAGE(buffer);
+    snprintf(buffer, sizeof(buffer), "%d;%d;%d", RobotUtils::sign1(drive_target), RobotUtils::sign2(drive_target), pwm_drive);
+    TEST_MESSAGE(buffer);
 
 }
 

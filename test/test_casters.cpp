@@ -300,11 +300,11 @@ void test_hl_scenario()
   hl_casters(20*1, -0.1, 0.0, 0.0, motors);
   hl_casters(20*1, 0.0, 0.0, 0.0, motors);
   */
-  // fwd - strafe right - bck - strafe left - fwd for init
+  // fwd - strafe left - bck - strafe right - fwd for init
   hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
-  hl_casters(20 * 4, 0.01, -0.2, 0.0, motors);
-  hl_casters(20 * 4, -0.01, 0.2, 0.0, motors);
-  hl_casters(20 * 4, 0.01, -0.2, 0.0, motors);
+  hl_casters(20 * 4, 0.0, -0.2, 0.0, motors);
+  hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);
+  hl_casters(20 * 4, 0.0, 0.3, 0.0, motors);
 
   // hl_casters(20 * 1, 0.0, 0.0, 0.0, motors);
   // hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);

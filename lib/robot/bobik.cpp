@@ -87,7 +87,7 @@ int Bobik::optimize_rotation(float current, float *target)
     targetOposite = simplify_rad(targetOposite);
     float travelOposite = abs(targetOposite - current);
 
-    if ( (abs(targetAsIs) + 0.8*travelAsIs) <= (abs(targetOposite) + 0.8*travelOposite) )
+    if ( (abs(targetAsIs) + 0.8*travelAsIs) <= (abs(targetOposite) + 0.8*travelOposite) +0.06 )  //0.06 is bias towards as-is to avoid random decisions based on rotation sensor noise
         trg = targetAsIs;
     else
     {
