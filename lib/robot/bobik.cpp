@@ -121,6 +121,10 @@ void Bobik::setCmdVel(float x, float y, float gamma)
         return;
     }
 
+    // convert unit/second to unit/frame (20FPS)
+    x /= FPS;
+    y /= FPS;
+    gamma /= FPS;
     // Rotate base
     float ax = LEN_SC * cos(DEG_A + gamma) + x;
     float ay = LEN_SC * -sin(DEG_A + gamma) + y;
@@ -139,7 +143,7 @@ void Bobik::setCmdVel(float x, float y, float gamma)
     float spdb = l2dist(bx - POS_B_x, by - POS_B_y);
     float spdc = l2dist(cx - POS_C_x, cy - POS_C_y);
 
-    float spd_coef = speed_cap(CASTER_DRIVE_MAX_SPEED, spda, spdb, spdc);
+    float spd_coef = speed_cap(CASTER_DRIVE_MAX_SPEED / FPS, spda, spdb, spdc);
     spda *= spd_coef;
     spdb *= spd_coef;
     spdc *= spd_coef;
@@ -185,9 +189,9 @@ void Bobik::setCmdVel(float x, float y, float gamma)
     else
     {
         driveStoppedDueToRotation = false;
-        caster_fl->setDriveTarget(reverse_speed_a * spda * CASTER_METERS2TICKS / FPS, driveStoppedDueToRotation);
-        caster_fr->setDriveTarget(reverse_speed_b * spdb * CASTER_METERS2TICKS / FPS, driveStoppedDueToRotation);
-        caster_r->setDriveTarget(reverse_speed_c * spdc * CASTER_METERS2TICKS / FPS, driveStoppedDueToRotation);
+        caster_fl->setDriveTarget(reverse_speed_a * spda * CASTER_METERS2TICKS, driveStoppedDueToRotation);
+        caster_fr->setDriveTarget(reverse_speed_b * spdb * CASTER_METERS2TICKS, driveStoppedDueToRotation);
+        caster_r->setDriveTarget(reverse_speed_c * spdc * CASTER_METERS2TICKS, driveStoppedDueToRotation);
     }
 
 }

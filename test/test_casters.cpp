@@ -5,14 +5,20 @@
 #include <bobik.h>
 #include "robot_utils.h"
 
+
+/*
+ * Flags
+*/
+#define TEST_MOTORS
+// #define SERIAL_OUTPUT // if enabled run "pio test", Ctrl+C, "pio device monitor -b 500000" to see serial output
+
 /*
  * Enable required test suites here:
  */
-// #define SERIAL_OUTPUT // if enabled run "pio test", Ctrl+C, "pio device monitor -b 500000" to see serial output
-#define TEST_MOTORS
 // #define TEST_ROTATION
 // #define TEST_DRIVE
 #define TEST_HIGHLEVEL
+
 
 #define SIZE 70
 #define ROTATION_TOLERANCE 44 // 1 deg
@@ -280,60 +286,67 @@ void test_hl_scenario()
   snprintf(buffer, sizeof(buffer), "Base config hdr;frame; X;Y;gamma; flx;fly;flg;flspd; frx;fry;frg;frspd; rx;ry;rg;rspd");
   TEST_MESSAGE(buffer);
   // frames, cmd_vel x, y, gamma
-  /*
+  
   // drive speed test
-  hl_casters(20*1, 0.1, 0.0, 0.0, motors);
-  hl_casters(20*1, 0.2, 0.0, 0.0, motors);
-  hl_casters(20*1, 0.3, 0.0, 0.0, motors);
-  hl_casters(20*1, 0.4, 0.0, 0.0, motors);
-  hl_casters(20*1, 0.3, 0.0, 0.0, motors);
-  hl_casters(20*1, 0.2, 0.0, 0.0, motors);
-  hl_casters(20*1, 0.1, 0.0, 0.0, motors);
-  hl_casters(20*1, 0.0, 0.0, 0.0, motors);
+  // hl_casters(20*1, 0.1, 0.0, 0.0, motors);
+  // hl_casters(20*5, 0.2, 0.0, 0.0, motors);
+  // hl_casters(20*1, 0.3, 0.0, 0.0, motors);
+  // hl_casters(20*1, 0.4, 0.0, 0.0, motors);
+  // hl_casters(20*1, 0.3, 0.0, 0.0, motors);
+  // hl_casters(20*1, 0.2, 0.0, 0.0, motors);
+  // hl_casters(20*1, 0.1, 0.0, 0.0, motors);
+  // hl_casters(20*1, 0.0, 0.0, 0.0, motors);
+  
   // drive speed test backwards
-  hl_casters(20*1, -0.1, 0.0, 0.0, motors);
-  hl_casters(20*1, -0.2, 0.0, 0.0, motors);
-  hl_casters(20*1, -0.3, 0.0, 0.0, motors);
-  hl_casters(20*1, -0.4, 0.0, 0.0, motors);
-  hl_casters(20*1, -0.3, 0.0, 0.0, motors);
-  hl_casters(20*1, -0.2, 0.0, 0.0, motors);
-  hl_casters(20*1, -0.1, 0.0, 0.0, motors);
-  hl_casters(20*1, 0.0, 0.0, 0.0, motors);
-  */
+  // hl_casters(20*1, -0.1, 0.0, 0.0, motors);
+  // hl_casters(20*1, -0.2, 0.0, 0.0, motors);
+  // hl_casters(20*1, -0.3, 0.0, 0.0, motors);
+  // hl_casters(20*1, -0.4, 0.0, 0.0, motors);
+  // hl_casters(20*1, -0.3, 0.0, 0.0, motors);
+  // hl_casters(20*1, -0.2, 0.0, 0.0, motors);
+  // hl_casters(20*1, -0.1, 0.0, 0.0, motors);
+  // hl_casters(20*1, 0.0, 0.0, 0.0, motors);
+  
   // fwd - strafe left - bck - strafe right - fwd for init
-  hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
-  hl_casters(20 * 4, 0.0, -0.2, 0.0, motors);
-  hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);
-  hl_casters(20 * 4, 0.0, 0.3, 0.0, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
+  // hl_casters(20 * 4, 0.0, -0.2, 0.0, motors);
+  // hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);
+  // hl_casters(20 * 4, 0.0, 0.3, 0.0, motors);
+
+  // fwd + alternate slight left-right rotations
+  // hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
+  // hl_casters(20 * 4, 0.4, 0.0, 0.5, motors);
+  // hl_casters(20 * 4, 0.4, 0.0, -0.5, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 0.0, motors);
 
   // fwd, rot left on spot, rot right on spot, fwd
-  // fwd + alternate slight left-right rotations
+  // hl_casters(20 * 1, 0.2, 0.0, 0.0, motors);
+  // hl_casters(20 * 4, 0.0, 0.0, 1.0, motors);
+  // hl_casters(1, 0.0, 0.0, 0.0, motors);
+  // hl_casters(20 * 4, 0.0, 0.0, -1.0, motors);
+
   // full fwd + onboard rotation left, decrease fwd animation
+  // hl_casters(20 * 1, 0.4, 0.0, 0.1, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 0.2, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 0.3, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 0.4, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 0.5, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 0.6, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 0.7, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 0.8, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 0.9, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 1.0, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 1.5, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 2.0, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 2.5, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 3.0, motors);
+  // hl_casters(20 * 1, 0.4, 0.0, 3.5, motors);
+  // hl_casters(20 * 1, 0.2, 0.0, 3.5, motors);
+  // hl_casters(20 * 1, 0.0, 0.0, 3.5, motors);
+
   // slow fwd and fast rotation (like PR2 demo)
+  // hl_casters(20 * 10, 0.15, 0.15, 1.5, motors);  //not able to judge if this works while on test bench
 
-  // hl_casters(20 * 1, 0.0, 0.0, 0.0, motors);
-  // hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);
-  // hl_casters(20 * 4, 0.2, 0.0, 0.0, motors);
-  // hl_casters(20 * 4, -0.2, 0.0, 0.0, motors);
-
-  // hl_casters(20 * 4, -0.4, 0.0, 0.0, motors);
-  // hl_casters(20 * 4, 0.0, -0.4, 0.0, motors);
-  // hl_casters(20 * 1, 0.0, 0.0, 0.0, motors);
-  // hl_casters(20 * 1, 0.03, 0.0, 0.0, motors);
-
-/*
-  // rotate full left on the spot
-  hl_casters(20 * 1, 0.2, 0.0, 0.1, motors);
-  hl_casters(20 * 1, 0.2, 0.0, 0.2, motors);
-  hl_casters(20 * 1, 0.2, 0.0, 0.3, motors);
-  hl_casters(20 * 1, 0.2, 0.0, 0.4, motors);
-  hl_casters(20 * 1, 0.2, 0.0, 0.5, motors);
-  hl_casters(20 * 1, 0.2, 0.0, 0.6, motors);
-  hl_casters(20 * 1, 0.2, 0.0, 0.7, motors);
-  hl_casters(20 * 1, 0.2, 0.0, 0.8, motors);
-  hl_casters(20 * 1, 0.2, 0.0, 0.9, motors);
-  hl_casters(20 * 1, 0.2, 0.0, 1.0, motors);
-*/
   // stop
   hl_casters(20 * 2, 0.0, 0.0, 0.0, motors); 
 }
@@ -486,7 +499,7 @@ void setup()
 
 #ifdef TEST_HIGHLEVEL
 #ifdef TEST_MOTORS
-  hl_casters(20 * 3, 0.03, 0.0, 0.0, true);
+  hl_casters(20 * 1, 0.03, 0.0, 0.0, true);
 #endif
   RUN_TEST(test_base_simplify_rad);
   RUN_TEST(test_optimize_rotation);
