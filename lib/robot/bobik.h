@@ -71,8 +71,8 @@ private:
      * @param dy point's y coordinate, +y pointing right
      * @return rotation angle [rad]. 0 points forward, PI/2 left, -PI/2 right
      */
-    float point2rad(float dx, float dy);
-    float l2dist(float dx, float dy);
+    // float point2rad(float dx, float dy);
+    // float l2dist(float dx, float dy);
     /**
      * @brief If any wheel is requested to to go over max speed capability, calculate coefficient to reduce speed of all wheels to fix max speed.
      * 

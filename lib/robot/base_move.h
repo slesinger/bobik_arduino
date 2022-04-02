@@ -1,6 +1,8 @@
 #ifndef base_move_h
 #define base_move_h
 
+#include "robot_utils.h"
+
 float Bobik::speed_cap(float maxspd, float spd1, float spd2, float spd3)
 {
     if ( (spd1 <= maxspd) && (spd2 <= maxspd) && (spd3 <= maxspd) )
@@ -79,14 +81,14 @@ void Bobik::setCmdVel(float x, float y, float gamma)
     float cy = LEN_SC * -sin(DEG_C + gamma) + y;
 
     // UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.001, 0, -day/dax, 28, "zlomek");
-    float dega = point2rad(ax - POS_A_x, ay - POS_A_y);
-    float degb = point2rad(bx - POS_B_x, by - POS_B_y);
-    float degc = point2rad(cx - POS_C_x, cy - POS_C_y);
+    float dega = RobotUtils::point2rad(ax - POS_A_x, ay - POS_A_y);
+    float degb = RobotUtils::point2rad(bx - POS_B_x, by - POS_B_y);
+    float degc = RobotUtils::point2rad(cx - POS_C_x, cy - POS_C_y);
 
     // to be moved in 1 second
-    float spda = l2dist(ax - POS_A_x, ay - POS_A_y);
-    float spdb = l2dist(bx - POS_B_x, by - POS_B_y);
-    float spdc = l2dist(cx - POS_C_x, cy - POS_C_y);
+    float spda = RobotUtils::l2dist(ax - POS_A_x, ay - POS_A_y);
+    float spdb = RobotUtils::l2dist(bx - POS_B_x, by - POS_B_y);
+    float spdc = RobotUtils::l2dist(cx - POS_C_x, cy - POS_C_y);
 
     float spd_coef = speed_cap(CASTER_DRIVE_MAX_SPEED / FPS, spda, spdb, spdc);
     spda *= spd_coef;

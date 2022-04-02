@@ -60,7 +60,7 @@ public:
         return (x - in_min) * (float)(out_max - out_min) / (float)(in_max - in_min) + out_min;
     }
 
-    float point2rad(float dx, float dy)
+    static float point2rad(float dx, float dy)
     {
         float deg = NAN;
         if (dx == 0) // 90 or -90 deg
@@ -83,7 +83,7 @@ public:
         return deg;
     }
 
-    float l2dist(float dx, float dy)
+    static float l2dist(float dx, float dy)
     {
         return sqrt(dx * dx + dy * dy);
     }
