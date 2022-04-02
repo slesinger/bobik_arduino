@@ -222,7 +222,7 @@ void Caster::execute()
         pwm_drive = 0;
         pwm_drive_prev = 0;
     }
-// debug_int = drive_target;
+debug_int = effort_drive;
 
     digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(drive_target));
     digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(drive_target));

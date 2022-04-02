@@ -1,9 +1,10 @@
 #ifndef robot_config_h
 #define robot_config_h
 
-/*
-*   This code is #included to Bobik::read_config
-*/
+/**
+ * @brief Define configuration values for robot here. See robot_config_types.h for structure definition.
+ * This code is #included to Bobik::read_config
+ */
 
 // Note on ROS coordinate system (https://www.ros.org/reps/rep-0103.html)
 // X forward, Y right*, Z up
@@ -51,6 +52,9 @@
     cfg.caster_r.rotation_motor = {41, 43, 46};
     cfg.caster_r.drive_motor = {37, 39, 6};
     cfg.caster_r.drive_sensor_pin = 19;
+
+    // Lidar
+    cfg.lidar.motor_pwm_pin = 9;
 
     // Head
 

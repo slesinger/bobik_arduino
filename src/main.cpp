@@ -4,9 +4,9 @@
 #include <bobik.h>
 #include <protocol.h>
 #include <protocol_types.h>
-
-#include <BobikCasters.h>
 #include "robot_utils.h"
+
+#include "BobikCasters.h"
 
 // #include <hx711.h>
 // #include <mpu9150.h> //IMU GY-9150
@@ -27,6 +27,7 @@ void setup()
 
   casters_handler.init(&caster_settings);
   serial_event_message_subscribe(DRIVE_CMD, &casters_handler);
+
 }
 
 void loop()

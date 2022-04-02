@@ -1,3 +1,9 @@
+export FASTRTPS_DEFAULT_PROFILES_FILE=/home/honza/ros2_foxy/super_client_configuration_file.xml
+ros2 daemon restart
+
+ros2 run rviz2 rviz2
+
+
 # bobik_arduino
 Firmware for main Arduino board
 # PlatformIO VS Code
@@ -10,6 +16,20 @@ Include this line to C/C++ Configurations as "Include path":
 
 If serial send and receive does not work in parallel, reset Arduino
 
+### Instal raspi-config on Ubuntu
+https://raspberrypi.stackexchange.com/questions/111728/how-to-get-raspi-config-on-ubuntu-20-04
+
+```
+sudo usermod -a -G tty ubuntu
+sudo aptitude libasio-dev
+cd ~/ros2_foxy/src
+git clone https://github.com/mjstn/xv_11_driver
+cd ~/ros2_foxy
+colcon build
+. ~/ros2_foxy/install/local_setup.bash
+ros2 run xv_11_driver xv_11_driver --ros-args -p port=/dev/ttyS0
+```
+
 # Arduino Pins Description
 
 https://aws1.discourse-cdn.com/arduino/original/4X/4/0/c/40ca0db220e359ad94a4e61e70d0a54406986232.png
@@ -18,7 +38,9 @@ https://aws1.discourse-cdn.com/arduino/original/4X/4/0/c/40ca0db220e359ad94a4e61
 4 - PWM ENA drive caster LF (yellow, 1 stripe, close to pin)
 5 - PWM ENA drive caster RF (yellow, 2 stripes, close to pin)
 6 - PWM ENA drive caster R (yellow, 3 stripes, close to pin)
-
+9 - PWM XV-11 Lidar motor
+10 - neco s AS5048!!!!!
+11 - neco s AS5048!!!!!
 19 - odom IR tick signal FL
 20 - odom IR tick signal FR
 21 - odom IR tick signal R

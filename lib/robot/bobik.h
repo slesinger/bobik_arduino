@@ -4,15 +4,17 @@
 #include "robot_config_types.h"
 #include "robot_frame_config.h"
 #include "caster.h"
+#include "lidar.h"
 
 class Bobik
 {
 public:
     Base_t cfg;
 
-    static Caster *caster_fl;
+    static Caster *caster_fl;  //must be static because it is used in ISR
     static Caster *caster_fr;
     static Caster *caster_r;
+    Lidar *lidar;
 
     Bobik();
 
