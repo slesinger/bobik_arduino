@@ -263,9 +263,9 @@ void hl_casters(int num_frames, float x, float y, float g, int enable_motors)
   {
     robot.setCmdVel(x, y, g); // forward, strafe left, rotate left
     // robot.getCmdVelDebug(dbg);
-    int dept_fl = robot.caster_fl->getDriveTicksDept();
-    int dept_fr = robot.caster_fr->getDriveTicksDept();
-    int dept_r = robot.caster_r->getDriveTicksDept();
+    // int dept_fl = robot.caster_fl->getDriveTicksDept();
+    // int dept_fr = robot.caster_fr->getDriveTicksDept();
+    // int dept_r = robot.caster_r->getDriveTicksDept();
     // snprintf(buffer, sizeof(buffer), "Base config;%d; %d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d; %d;%d;%d;%d | %d;%d;%d", t, f2i(x), f2i(y), f2i(g),
             //  f2i(dbg[0]), f2i(dbg[1]), f2i(dbg[2]), f2i(dbg[3]), f2i(dbg[4]), f2i(dbg[5]), f2i(dbg[6]), f2i(dbg[7]), f2i(dbg[8]), f2i(dbg[9]), f2i(dbg[10]), f2i(dbg[11]), dept_fl, dept_fr, dept_r);
     // TEST_MESSAGE(buffer);
@@ -282,9 +282,9 @@ void test_hl_scenario()
 #ifdef TEST_MOTORS
   motors = true;
 #endif
-  char buffer[128];
-  snprintf(buffer, sizeof(buffer), "Base config hdr;frame; X;Y;gamma; flx;fly;flg;flspd; frx;fry;frg;frspd; rx;ry;rg;rspd");
-  TEST_MESSAGE(buffer);
+  // char buffer[128];
+  // snprintf(buffer, sizeof(buffer), "Base config hdr;frame; X;Y;gamma; flx;fly;flg;flspd; frx;fry;frg;frspd; rx;ry;rg;rspd");
+  // TEST_MESSAGE(buffer);
   // frames, cmd_vel x, y, gamma
 
   hl_casters(20*10, 0.2, 0.0, 0.0, motors);
@@ -349,8 +349,11 @@ void test_hl_scenario()
   // TEST_MESSAGE("Drive: slow fwd and fast rotation (like PR2 demo)");
   // hl_casters(20 * 10, 0.15, 0.15, 1.5, motors);  //not able to judge if this works while on test bench
 
+  // TEST_MESSAGE("Drive: half-speed fwd");
+  hl_casters(20 * 2, 0.2, 0.0, 0.0, motors);
+
   // stop
-  hl_casters(20 * 2, 0.0, 0.0, 0.0, motors); 
+  hl_casters(20 * 0.5, 0.0, 0.0, 0.0, motors); 
 }
 
 void test_base_simplify_rad()

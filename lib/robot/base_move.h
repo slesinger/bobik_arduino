@@ -81,6 +81,7 @@ void Bobik::setCmdVel(float x, float y, float gamma)
     float cy = LEN_SC * -sin(DEG_C + gamma) + y;
 
     // UNITY_TEST_ASSERT_DOUBLE_WITHIN(0.001, 0, -day/dax, 28, "zlomek");
+    // dega [rad]
     float dega = RobotUtils::point2rad(ax - POS_A_x, ay - POS_A_y);
     float degb = RobotUtils::point2rad(bx - POS_B_x, by - POS_B_y);
     float degc = RobotUtils::point2rad(cx - POS_C_x, cy - POS_C_y);
@@ -110,10 +111,11 @@ void Bobik::setCmdVel(float x, float y, float gamma)
     desired_frame_config.base.caster_r.gamma = degc;
     desired_frame_config.base.caster_r.speed = spdc;
 
-    // 1 go normal, -1 go reverse
+    // [rad]
     float curr_rot_fl = caster_fl->getRotation() * CASTER_UNITS2RAD;
     float curr_rot_fr = caster_fr->getRotation() * CASTER_UNITS2RAD;
     float curr_rot_r = caster_r->getRotation() * CASTER_UNITS2RAD;
+    // 1 go normal, -1 go reverse
     float reverse_speed_a = optimize_rotation(curr_rot_fl, &dega);
     float reverse_speed_b = optimize_rotation(curr_rot_fr, &degb);
     float reverse_speed_c = optimize_rotation(curr_rot_r, &degc);
@@ -153,14 +155,14 @@ void Bobik::getCmdVelDebug(float *res)
 
     res[4] = desired_frame_config.base.caster_fr.x;
     res[5] = desired_frame_config.base.caster_fr.y;
-    res[6] = desired_frame_config.base.caster_fr.gamma;
-    // res[6] = (float)(caster_fr->debug_int/1000.0);
+    // res[6] = desired_frame_config.base.caster_fr.gamma;
+    res[6] = (float)(caster_fr->debug_int/1000.0);
     res[7] = desired_frame_config.base.caster_fr.speed;
 
     res[8] = desired_frame_config.base.caster_r.x;
     res[9] = desired_frame_config.base.caster_r.y;
-    res[10] = desired_frame_config.base.caster_r.gamma;
-    // res[10] = (float)(caster_r->debug_int/1000.0);
+    // res[10] = desired_frame_config.base.caster_r.gamma;
+    res[10] = (float)(caster_r->debug_int/1000.0);
     res[11] = desired_frame_config.base.caster_r.speed;
 }
 
