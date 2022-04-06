@@ -93,21 +93,8 @@ void emit_caster_joint_states(MsgCasterJointStates_t *cjs) {
 
     uint8_t *buf = (uint8_t*)cjs;
     Serial.write(buf, sizeof(MsgCasterJointStates_t));
-    for (int i=0; i<8; i++) crc8.add(buf[i]);
+    for (int i=0; i<(6*2+2); i++) crc8.add(buf[i]);
 }
-
-void emit_drive_joint_states(MsgDriveJointStates_t *cjs) {
-    Serial.write(MSG_START);
-    crc8.add(MSG_START);
-
-    Serial.write(DRIVE_JOINT_STATES);
-    crc8.add(DRIVE_JOINT_STATES);
-
-    uint8_t *buf = (uint8_t*)cjs;
-    Serial.write(buf, sizeof(MsgDriveJointStates_t));
-    for (int i=0; i<8; i++) crc8.add(buf[i]);
-}
-
 
 void emit_IMU9DOF(MsgIMU9DOF_t *imu) {
     Serial.write(MSG_START);

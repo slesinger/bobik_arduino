@@ -15,7 +15,6 @@ Bobik *robot = new Bobik();
 
 // Define messages sent to driver
 MsgCasterJointStates_t caster_joint_states;
-MsgDriveJointStates_t drive_joint_states;
 // hx711 loadcell_upper_arm_lift_joint = hx711(LOADCELL_UPPER_ARM_LIFT_JOINT, 4, 5);
 // mpu9150 base_mpu = mpu9150(); //I2C, including Wire.init()
 
@@ -41,12 +40,10 @@ void loop()
   caster_joint_states.fl_caster_rotation_joint = robot->caster_fl->getRotation();
   caster_joint_states.fr_caster_rotation_joint = robot->caster_fr->getRotation();
   caster_joint_states.r_caster_rotation_joint = robot->caster_r->getRotation();
+  caster_joint_states.fl_caster_drive_joint = robot->caster_fl->getDriveTicks();
+  caster_joint_states.fr_caster_drive_joint = robot->caster_fr->getDriveTicks();
+  caster_joint_states.r_caster_drive_joint = robot->caster_r->getDriveTicks();
   emit_caster_joint_states(&caster_joint_states);
-
-  drive_joint_states.fl_caster_drive_joint = robot->caster_fl->getDriveTicks();
-  drive_joint_states.fr_caster_drive_joint = robot->caster_fr->getDriveTicks();
-  drive_joint_states.r_caster_drive_joint = robot->caster_r->getDriveTicks();
-  emit_drive_joint_states(&drive_joint_states);
 
   // MPU
   // base_mpu.run();

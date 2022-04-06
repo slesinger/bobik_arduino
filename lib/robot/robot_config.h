@@ -35,6 +35,7 @@
     #define CASTER_DRIVE_MIN_SPEED 0.03
     #define CASTER_DRIVE_MAX_SPEED 0.4
     #define CASTER_METERS2TICKS (2*120) / (0.123 * M_PI)   // (falling + raising edge) * 120 holes / (D * PI)
+    #define CASTER_TICKS2METERS (0.123 * M_PI) / (2*120) 
 
     // Casters
     cfg.caster_fl.rotation_sensor.spi_cs_pin = 10;

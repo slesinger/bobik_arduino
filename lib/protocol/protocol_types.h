@@ -29,14 +29,10 @@ struct MsgTimestamp_t {
 #define CASTER_JOINT_STATES 2
 struct MsgCasterJointStates_t {
    int16_t fl_caster_rotation_joint;
-   int16_t fr_caster_rotation_joint;
-   int16_t r_caster_rotation_joint;
-};
-
-#define DRIVE_JOINT_STATES 3
-struct MsgDriveJointStates_t {
    int16_t fl_caster_drive_joint;
+   int16_t fr_caster_rotation_joint;
    int16_t fr_caster_drive_joint;
+   int16_t r_caster_rotation_joint;
    int16_t r_caster_drive_joint;
 };
 

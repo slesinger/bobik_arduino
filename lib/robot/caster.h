@@ -64,6 +64,12 @@ public:
     void execute();
 
     /**
+     * @brief Reset all values set by message handlers received from driver. This ensures that missing next frame message will not reuse old values.
+     * 
+     */
+    void clean_afer_execute();
+
+    /**
      * @brief Stop rotation and drive motors on this caster.
      * 
      */

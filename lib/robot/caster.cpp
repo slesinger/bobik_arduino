@@ -232,6 +232,13 @@ void Caster::execute()
     analogWrite(cfg.drive_motor.ena, abs(pwm_drive));  //abs() is not needed here, just safety
     last_frame_ticks_dir = RobotUtils::sign(drive_target);  // will be used next frame to determine ticks to add or sub
 
+    clean_afer_execute();
+}
+
+void Caster::clean_afer_execute()
+{
+    drive_current_frame_required_ticks = 0;
+    // drive_target = 0;
 }
 
 void Caster::stopMotors()

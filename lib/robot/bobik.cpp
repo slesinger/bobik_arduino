@@ -19,7 +19,7 @@ Bobik::Bobik()
     caster_fr = new Caster(cfg.caster_fr);
     caster_r  = new Caster(cfg.caster_r);
 
-    // For reading IR ticks from drive. Set timer1 interrupt at 1.125kHz. AttachInterrupt on pins does give good results. Equichrono sampling works fine.
+    // Caster IR ticks reading from drive wheels. Set timer1 interrupt at 1.125kHz. AttachInterrupt on pins does give good results. Equichrono sampling works fine.
     cli(); //stop interrupts
     TCCR1A = 0;
     TCCR1B = 0;
