@@ -10,9 +10,9 @@ class Bobik
 public:
     Base_t cfg;
 
-    Caster *caster_fl;
-    Caster *caster_fr;
-    Caster *caster_r;
+    static Caster *caster_fl;
+    static Caster *caster_fr;
+    static Caster *caster_r;
 
     Bobik();
 
@@ -72,6 +72,7 @@ private:
     void read_config() {
        #include "robot_config.h"
     }
+
 };
 
 #endif

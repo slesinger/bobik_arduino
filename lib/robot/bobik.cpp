@@ -2,6 +2,10 @@
 #include <math.h>
 #include <unity.h>
 
+Caster *Bobik::caster_fl;
+Caster *Bobik::caster_fr;
+Caster *Bobik::caster_r;
+
 Bobik::Bobik()
 {
     read_config();
@@ -10,6 +14,19 @@ Bobik::Bobik()
     caster_fl = new Caster(cfg.caster_fl);
     caster_fr = new Caster(cfg.caster_fr);
     caster_r  = new Caster(cfg.caster_r);
+
+    // set timer1 interrupt at 1.125kHz. For IR drive counter ticks. AttachInterrupt on pins does give good results. Equichrono sampling is perfect.
+    cli(); //stop interrupts
+    TCCR1A = 0;
+    TCCR1B = 0;
+    TCNT1  = 0;
+    OCR1A = 200; // 200~1250Hz; 124 = (16*10^6) / (2000*64) - 1 (must be <256)
+    TCCR1B |= (1 << WGM12); // turn on CTC mode
+    // Set CS01 and CS00 bits for 64 prescaler
+    TCCR1B |= (1 << CS01) | (1 << CS00);
+    TIMSK1 |= (1 << OCIE1A); // enable timer compare interrupt
+    sei(); //allow interrupts
+
 }
 
 float Bobik::point2rad(float dx, float dy)
@@ -188,4 +205,12 @@ void Bobik::execute() {
     caster_fr->execute();
     caster_r->execute();
 
+}
+
+
+ISR(TIMER1_COMPA_vect)
+{
+  Bobik::caster_fl->drive_sensor_tick();
+  Bobik::caster_fr->drive_sensor_tick();
+  Bobik::caster_r->drive_sensor_tick();
 }

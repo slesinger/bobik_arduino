@@ -75,6 +75,12 @@ public:
      */
     void stopMotors();
 
+    /**
+     * @brief This is called from HW Timer IRQ 1 from bobik.cpp because timer IRQ handling routine (ISR) can only be one.
+     * 
+     */
+    void drive_sensor_tick();
+
 private:
     Caster_t cfg;
     AS5048A *rotation_sensor;
@@ -84,12 +90,12 @@ private:
     static Caster *caster_fr;
     static void drive_sensor_interrupt_r();
     static Caster *caster_r;
-    void inc_drive_sensor_tick();
 
     int16_t rotation_target;
     int16_t pid_prev_rotation;
     int16_t pid_i_rotation;
     uint16_t drive_sensor_ticks;
+    int last_drive_sensor_val;
     int8_t last_frame_ticks_dir;
     unsigned long drive_sensor_tick_last_update_ms; // to filter IR signal jitter on edges, interrupts are damn fast. Signal needs to be stable at least 2ms
     int16_t drive_target;

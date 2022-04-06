@@ -45,24 +45,7 @@ Caster::Caster(Caster_t caster_cfg)
 
     pinMode(cfg.drive_sensor_pin, INPUT);
     digitalWrite(cfg.drive_sensor_pin, HIGH); // set pullup resistor
-    switch (cfg.drive_sensor_pin)             // this is needed because only static method can be used with attachInterrupt
-    {
-    case 20:
-        attachInterrupt(digitalPinToInterrupt(cfg.drive_sensor_pin), drive_sensor_interrupt_fl, CHANGE);
-        caster_fl = this;
-        break;
-    case 19:
-        attachInterrupt(digitalPinToInterrupt(cfg.drive_sensor_pin), drive_sensor_interrupt_fr, CHANGE);
-        caster_fr = this;
-        break;
-    case 21:
-        attachInterrupt(digitalPinToInterrupt(cfg.drive_sensor_pin), drive_sensor_interrupt_r, CHANGE);
-        caster_r = this;
-        break;
 
-    default:
-        break;
-    }
 }
 
 int16_t Caster::getRotation()
@@ -120,27 +103,14 @@ int16_t Caster::getDriveTicksDept()
     return drive_target;
 }
 
-void Caster::inc_drive_sensor_tick()
+void Caster::drive_sensor_tick()
 {
-    unsigned long now_ms = millis();
-    if ((drive_sensor_tick_last_update_ms + 2 ) <= now_ms)
+    int val = digitalRead(cfg.drive_sensor_pin);
+    if (val != last_drive_sensor_val)
     {
         drive_sensor_ticks++;
-        drive_sensor_tick_last_update_ms = now_ms;
+        last_drive_sensor_val = val;
     }
-}
-
-void Caster::drive_sensor_interrupt_fl()
-{
-    caster_fl->inc_drive_sensor_tick();
-}
-void Caster::drive_sensor_interrupt_fr()
-{
-    caster_fr->inc_drive_sensor_tick();
-}
-void Caster::drive_sensor_interrupt_r()
-{
-    caster_r->inc_drive_sensor_tick();
 }
 
 void Caster::pingDriveMotor()
