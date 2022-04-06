@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <ievent_handler.h>
+#include <bobik.h>
 
 struct motor_pins_t
 {
@@ -25,12 +26,13 @@ struct caster_settings_t
 class BobikCasters: public IEventHandler 
 {
     public:
-        BobikCasters();
+        BobikCasters(Bobik *bobik);
         void init(caster_settings_t *settings);
         void serial_message_handler(unsigned char* data, uint8_t *log_buf);
 
     private:
         struct caster_settings_t *caster_settings;
+        Bobik *robot;
 
 };
 

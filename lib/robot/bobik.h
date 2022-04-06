@@ -4,15 +4,17 @@
 #include "robot_config_types.h"
 #include "robot_frame_config.h"
 #include "caster.h"
+#include "lidar.h"
 
 class Bobik
 {
 public:
     Base_t cfg;
 
-    static Caster *caster_fl;
+    static Caster *caster_fl;  //must be static because it is used in ISR
     static Caster *caster_fr;
     static Caster *caster_r;
+    Lidar *lidar;
 
     Bobik();
 
@@ -24,6 +26,12 @@ public:
      * @param gamma - turn left [rad] ?;?
      */
     void setCmdVel(float x, float y, float gamma);
+
+    /**
+     * @brief Stops rotation and drive motors on all casters
+     * 
+     */
+    static void stopAllCastersMotors();
 
     /**
      * @brief Call each frame to commit new values to hardware.
@@ -46,6 +54,12 @@ public:
     float simplify_rad(float rad);
     int optimize_rotation(float current, float *target);
 
+    /**
+     * @brief Normally false. If true, it means casters are performing rotation and direction of new movement is far from current caster's direction. Hence casters are likely in unacceptable configuration. All drives are stopped during that time to avoid braking of casters.
+     * 
+     */
+    bool driveStoppedDueToRotation;
+
 
 private:
     RobotFrameConfig desired_frame_config;
@@ -57,8 +71,8 @@ private:
      * @param dy point's y coordinate, +y pointing right
      * @return rotation angle [rad]. 0 points forward, PI/2 left, -PI/2 right
      */
-    float point2rad(float dx, float dy);
-    float l2dist(float dx, float dy);
+    // float point2rad(float dx, float dy);
+    // float l2dist(float dx, float dy);
     /**
      * @brief If any wheel is requested to to go over max speed capability, calculate coefficient to reduce speed of all wheels to fix max speed.
      * 

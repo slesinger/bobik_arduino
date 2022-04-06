@@ -1,9 +1,10 @@
 #ifndef robot_config_h
 #define robot_config_h
 
-/*
-*   This code is #included to Bobik::read_config
-*/
+/**
+ * @brief Define configuration values for robot here. See robot_config_types.h for structure definition.
+ * This code is #included to Bobik::read_config
+ */
 
 // Note on ROS coordinate system (https://www.ros.org/reps/rep-0103.html)
 // X forward, Y right*, Z up
@@ -28,10 +29,13 @@
     #define DEG_B M_PI / -3.0
     #define DEG_C M_PI
 
-    #define CASTER_RAD2UNITS -8192.0/M_PI
+    #define CASTER_RAD2UNITS -8192.0 / M_PI
+    #define CASTER_UNITS2RAD M_PI / -8192.0
+    #define STOP_DUE_ROTATION_DIFF 0.5   // [rad]   >28deg difference in rotation requires to stop driving and wait for rotation to complete
     #define CASTER_DRIVE_MIN_SPEED 0.03
     #define CASTER_DRIVE_MAX_SPEED 0.4
     #define CASTER_METERS2TICKS (2*120) / (0.123 * M_PI)   // (falling + raising edge) * 120 holes / (D * PI)
+    #define CASTER_TICKS2METERS (0.123 * M_PI) / (2*120) 
 
     // Casters
     cfg.caster_fl.rotation_sensor.spi_cs_pin = 10;
@@ -49,6 +53,9 @@
     cfg.caster_r.rotation_motor = {41, 43, 46};
     cfg.caster_r.drive_motor = {37, 39, 6};
     cfg.caster_r.drive_sensor_pin = 19;
+
+    // Lidar
+    cfg.lidar.motor_pwm_pin = 9;
 
     // Head
 

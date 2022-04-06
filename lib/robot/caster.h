@@ -3,9 +3,9 @@
 
 #include <AS5048A.h> //absolute rotation encoder
 #include "robot_config_types.h"
-#include "component.h"
+// #include "component.h"
 
-class Caster : public Component
+class Caster // : public Component
 {
 public:
     Caster(Caster_t caster_cfg);
@@ -55,7 +55,7 @@ public:
      *
      * @param drive_ticks positive number: forward, negative: backward
      */
-    void setDriveTarget(int16_t drive_ticks);
+    void setDriveTarget(int16_t drive_ticks, bool stoppedFlag);
 
     /**
      * @brief Runs all caster logic for current frame. !Read getDriveTicks() before calling execute()
@@ -64,10 +64,10 @@ public:
     void execute();
 
     /**
-     * @brief Stops rotation and drive motors on all casters
+     * @brief Reset all values set by message handlers received from driver. This ensures that missing next frame message will not reuse old values.
      * 
      */
-    static void stopAllCastersMotors();
+    void clean_afer_execute();
 
     /**
      * @brief Stop rotation and drive motors on this caster.
@@ -81,26 +81,34 @@ public:
      */
     void drive_sensor_tick();
 
+    /**
+     * @brief For smoothing PWM drive
+     * 
+     */
+    int16_t pwm_drive_prev;  // dej zpatky do private
+
+
+    int16_t debug_int;
+
 private:
+    /**
+     * @brief Pointer to Bobik, the root object. This can be used for referencing.
+     * 
+     */
     Caster_t cfg;
     AS5048A *rotation_sensor;
-    static void drive_sensor_interrupt_fl();
-    static Caster *caster_fl;
-    static void drive_sensor_interrupt_fr();
-    static Caster *caster_fr;
-    static void drive_sensor_interrupt_r();
-    static Caster *caster_r;
 
     int16_t rotation_target;
     int16_t pid_prev_rotation;
     int16_t pid_i_rotation;
+    bool driveStoppedDueToRotation;
     uint16_t drive_sensor_ticks;
     int last_drive_sensor_val;
     int8_t last_frame_ticks_dir;
     unsigned long drive_sensor_tick_last_update_ms; // to filter IR signal jitter on edges, interrupts are damn fast. Signal needs to be stable at least 2ms
-    int16_t drive_target;
+    // int16_t drive_target;
+    int16_t drive_current_frame_required_ticks;
     int16_t pid_i_drive;
-    int16_t pwm_drive_prev;
 
 };
 
