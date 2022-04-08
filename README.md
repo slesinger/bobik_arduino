@@ -1,5 +1,6 @@
 export FASTRTPS_DEFAULT_PROFILES_FILE=/home/honza/ros2_foxy/super_client_configuration_file.xml
-ros2 daemon restart
+ros2 daemon stop
+ros2 daemon start
 
 ros2 run rviz2 rviz2
 
