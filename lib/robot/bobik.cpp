@@ -9,10 +9,6 @@ Caster *Bobik::caster_fl;  //must be here because it is static
 Caster *Bobik::caster_fr;
 Caster *Bobik::caster_r;
 
-Caster *Bobik::caster_fl;
-Caster *Bobik::caster_fr;
-Caster *Bobik::caster_r;
-
 Bobik::Bobik()
 {
     driveStoppedDueToRotation = false;
