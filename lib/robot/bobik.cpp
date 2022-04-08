@@ -52,11 +52,3 @@ void Bobik::execute() {
     caster_r->execute();
 
 }
-
-
-ISR(TIMER1_COMPA_vect)
-{
-  Bobik::caster_fl->drive_sensor_tick();
-  Bobik::caster_fr->drive_sensor_tick();
-  Bobik::caster_r->drive_sensor_tick();
-}
