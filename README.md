@@ -1,10 +1,3 @@
-export FASTRTPS_DEFAULT_PROFILES_FILE=/home/honza/ros2_foxy/super_client_configuration_file.xml
-ros2 daemon stop
-ros2 daemon start
-
-ros2 run rviz2 rviz2
-
-
 # bobik_arduino
 Firmware for main Arduino board
 # PlatformIO VS Code
@@ -16,20 +9,6 @@ Include this line to C/C++ Configurations as "Include path":
 # Important Notes
 
 If serial send and receive does not work in parallel, reset Arduino
-
-### Instal raspi-config on Ubuntu
-https://raspberrypi.stackexchange.com/questions/111728/how-to-get-raspi-config-on-ubuntu-20-04
-
-```
-sudo usermod -a -G tty ubuntu
-sudo aptitude libasio-dev
-cd ~/ros2_foxy/src
-git clone https://github.com/mjstn/xv_11_driver
-cd ~/ros2_foxy
-colcon build
-. ~/ros2_foxy/install/local_setup.bash
-ros2 run xv_11_driver xv_11_driver --ros-args -p port=/dev/ttyS0
-```
 
 # Arduino Pins Description
 
