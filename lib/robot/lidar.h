@@ -3,7 +3,7 @@
 
 #include "robot_config_types.h"
 
-#define LIDAR_PWM 180
+#define LIDAR_PWM 165
 
 class Lidar
 {
