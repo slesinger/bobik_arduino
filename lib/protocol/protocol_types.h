@@ -3,6 +3,9 @@
 
 #define FLOAT_INT16_PRECISION 5000.0
 
+#define TOPIC_CASTER_RAW "caster_raw"
+#define TOPIC_CMD_VEL "cmd_vel"
+
 #define LOOP_START 0xEA
 #define LOOP_END 0xAE
 #define MSG_START 0xEE
