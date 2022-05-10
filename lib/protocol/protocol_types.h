@@ -5,10 +5,20 @@
 
 #define TOPIC_CASTER_RAW "caster_raw"
 #define TOPIC_CMD_VEL "cmd_vel"
+#define TOPIC_LIDAR_RANGES "lidar_ranges"
+#define TOPIC_LIDAR_INTENSITIES "lidar_intensities"
 
 #define LOOP_START 0xEA
 #define LOOP_END 0xAE
 #define MSG_START 0xEE
+
+// Common data types
+struct LaserScan_t {
+   uint8_t data_type;  // 0: ranges, 1: intensities
+   uint32_t time_increment;
+   uint16_t data[360];
+};
+
 
 //Message types Arduino -> Driver
 #define LOG4 1
