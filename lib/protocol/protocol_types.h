@@ -14,7 +14,6 @@
 
 // Common data types
 struct LaserScan_t {
-   uint8_t data_type;  // 0: ranges, 1: intensities
    uint32_t time_increment;
    uint16_t data[360];
 };
