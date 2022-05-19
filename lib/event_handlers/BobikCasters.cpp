@@ -44,8 +44,8 @@ void BobikCasters::serial_message_handler(unsigned char* data, uint8_t *log_buf)
     float y = msg_cmd_vel.linear_y / FLOAT_INT16_PRECISION;
     float gamma = msg_cmd_vel.rotation / FLOAT_INT16_PRECISION;
     robot->setCmdVel(x, y, gamma);
-    log_buf[0] = (int8_t)msg_cmd_vel.linear_x;
-    log_buf[1] = (int8_t)msg_cmd_vel.linear_y;
-    log_buf[2] = (int8_t)msg_cmd_vel.rotation;
+    //log_buf[0] = (int8_t)msg_cmd_vel.linear_x;
+    //log_buf[1] = (int8_t)msg_cmd_vel.linear_y;
+    //log_buf[2] = (int8_t)msg_cmd_vel.rotation;
 
 }

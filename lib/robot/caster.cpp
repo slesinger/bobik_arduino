@@ -2,7 +2,7 @@
 #include "caster.h"
 #include "robot_utils.h"
 
-#define AVG_SIZE 7 // how many sensor readings to average
+#define AVG_SIZE 10 // how many sensor readings to average
 #define ROTATION_TOLERANCE 20
 #define DRIVE_TOLERANCE 10
 #define DRIVE_MAX_DEPT 100
@@ -159,7 +159,7 @@ void Caster::execute()
     int pwm_rotation = RobotUtils::map_cut(abs(effort),
                       ROTATION_TOLERANCE, // do not move if close enough to target [rot units]
                       600,                // if higher than that full thrust
-                      80,                // do not use lower PWM as motor will not move anyway
+                      60,                // do not use lower PWM as motor will not move anyway
                       PWM_MAX);
 
     // snprintf(buffer, sizeof(buffer), "%d;%d;%d", p, pid_i_rotation, pwm);
