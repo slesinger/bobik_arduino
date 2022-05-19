@@ -3,7 +3,7 @@
 #include "robot_utils.h"
 
 #define AVG_SIZE 7 // how many sensor readings to average
-#define ROTATION_TOLERANCE 10
+#define ROTATION_TOLERANCE 20
 #define DRIVE_TOLERANCE 10
 #define DRIVE_MAX_DEPT 100
 #define DRIVE_MAX_INTDEPT 10  // add overflow of ticks from last frames (cummulative) to all small speed to overcome excitation energy for motor. It is kept small; set to 0 if robot moves
