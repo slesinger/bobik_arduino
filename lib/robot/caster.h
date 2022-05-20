@@ -106,9 +106,14 @@ private:
     int last_drive_sensor_val;
     int8_t last_frame_ticks_dir;
     unsigned long drive_sensor_tick_last_update_ms; // to filter IR signal jitter on edges, interrupts are damn fast. Signal needs to be stable at least 2ms
+    int16_t pid_i_drive;
     // int16_t drive_target;
     int16_t drive_current_frame_required_ticks;
-    int16_t pid_i_drive;
+    /**
+     * @brief Take memory of requested drive direction. This memory is later used to make drive ticks positive or negative (give drive sensor a direction).
+     * @brief 1 = forward, 0 = stop, -1 = backward
+     */
+    int8_t drive_direction;
 
 };
 

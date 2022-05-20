@@ -9,7 +9,8 @@
 // Note on ROS coordinate system (https://www.ros.org/reps/rep-0103.html)
 // X forward, Y right*, Z up
 // yaw (axis Z) zero position is pointing forward*, positive turning left
-// * opposed to specification in REP103
+//   * opposed to specification in REP103. I am not sure for the reason already. It is translated 
+//     to REP103 in BobikBridge::cmd_vel_torobot (receive cmd_vel) and in BobikBridge::calculate_odom
 
     #define FPS 20
 

@@ -8,6 +8,17 @@ class RobotUtils
 {
 public:
     /**
+     * @brief if X is negative return -1, if x is positive return 1, if x is 0 return 0
+     *
+     * @param x
+     * @return int
+     */
+    static int8_t signZero(int x)
+    {
+        return (x < 0) ? -1 : 1;
+    }
+
+    /**
      * @brief if X is negative return -1, else return 1
      *
      * @param x

@@ -3,7 +3,7 @@
 #include "robot_utils.h"
 
 #define AVG_SIZE 10 // how many sensor readings to average
-#define ROTATION_TOLERANCE 20
+#define ROTATION_TOLERANCE 10
 #define DRIVE_TOLERANCE 10
 #define DRIVE_MAX_DEPT 100
 #define DRIVE_MAX_INTDEPT 10  // add overflow of ticks from last frames (cummulative) to all small speed to overcome excitation energy for motor. It is kept small; set to 0 if robot moves
@@ -94,7 +94,7 @@ void Caster::pingRotationMotor()
 
 int16_t Caster::getDriveTicks()
 {
-    return drive_sensor_ticks;
+    return drive_sensor_ticks * drive_direction;
 }
 
 int16_t Caster::getDriveTicksDept()
@@ -157,7 +157,7 @@ void Caster::execute()
     long effort = p + (pid_i_rotation / 4);
     // Full speed rotation changes 145 rotation unit per 50ms
     int pwm_rotation = RobotUtils::map_cut(abs(effort),
-                      ROTATION_TOLERANCE, // do not move if close enough to target [rot units]
+                      0, //ROTATION_TOLERANCE, // do not move if close enough to target [rot units]
                       600,                // if higher than that full thrust
                       60,                // do not use lower PWM as motor will not move anyway
                       PWM_MAX);
@@ -165,7 +165,7 @@ void Caster::execute()
     // snprintf(buffer, sizeof(buffer), "%d;%d;%d", p, pid_i_rotation, pwm);
     // TEST_MESSAGE(buffer);
 
-    if (abs(current - pid_prev_rotation) < ROTATION_TOLERANCE+10)
+    if (abs(current - pid_prev_rotation) < ROTATION_TOLERANCE)
     {
         pid_i_rotation += p; // no move since last frame
     }
@@ -175,7 +175,7 @@ void Caster::execute()
     }
     pid_prev_rotation = current;
 
-    if (abs(p) < ROTATION_TOLERANCE)
+    if (abs(p) < ROTATION_TOLERANCE + 30)
     {
         pwm_rotation = 0;
         pid_prev_rotation = 0;
@@ -225,6 +225,9 @@ void Caster::execute()
         pwm_drive = 0;
         pwm_drive_prev = 0;
     }
+
+    drive_direction = RobotUtils::signZero(drive_target);
+
 // debug_int = effort_drive;
 
     digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(drive_target));
