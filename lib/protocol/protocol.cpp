@@ -11,7 +11,7 @@ uint8_t recv_buf[64];
 IEventHandler *_handler_obj;
 
 void protocol_init() {
-    Serial3.begin(115200);  //500000
+    Serial3.begin(19200);  //500000 on USB, 115200 on Serial3 confimed on oscilloscope
     Serial3.setTimeout(SERIAL_TMOUT);
 }
 
@@ -91,6 +91,9 @@ void emit_caster_joint_states(MsgCasterJointStates_t *cjs) {
     Serial3.write(CASTER_JOINT_STATES);
     crc8.add(CASTER_JOINT_STATES);
 
+    cjs->fl_caster_drive_joint_redundant = cjs->fl_caster_drive_joint;
+    cjs->fr_caster_drive_joint_redundant = cjs->fr_caster_drive_joint;
+    cjs->r_caster_drive_joint_redundant = cjs->r_caster_drive_joint;
     uint8_t *buf = (uint8_t*)cjs;
     Serial3.write(buf, sizeof(MsgCasterJointStates_t));
     for (int i=0; i<(6*2+2); i++) crc8.add(buf[i]);
