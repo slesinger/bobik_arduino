@@ -42,13 +42,10 @@ struct MsgTimestamp_t {
 struct MsgCasterJointStates_t {
    int16_t fl_caster_rotation_joint;
    int16_t fl_caster_drive_joint;
-   int16_t fl_caster_drive_joint_redundant;
    int16_t fr_caster_rotation_joint;
    int16_t fr_caster_drive_joint;
-   int16_t fr_caster_drive_joint_redundant;
    int16_t r_caster_rotation_joint;
    int16_t r_caster_drive_joint;
-   int16_t r_caster_drive_joint_redundant;
 };
 
 #define IMU_9DOF 4
