@@ -1,12 +1,11 @@
 // #include <unity.h>
-#include "caster.h"
 #include "robot_utils.h"
 
 #define AVG_SIZE 10 // how many sensor readings to average
 #define ROTATION_TOLERANCE 10
 #define DRIVE_TOLERANCE 10
-#define DRIVE_MAX_DEPT 100
-#define DRIVE_MAX_INTDEPT 10  // add overflow of ticks from last frames (cummulative) to all small speed to overcome excitation energy for motor. It is kept small; set to 0 if robot moves
+#define DRIVE_MAX_DEBT 100
+#define DRIVE_MAX_INTDEBT 10  // add overflow of ticks from last frames (cummulative) to all small speed to overcome excitation energy for motor. It is kept small; set to 0 if robot moves
 #define PWM_MAX 255
 
 Caster::Caster(Caster_t caster_cfg)
@@ -190,15 +189,15 @@ void Caster::execute()
     // Drive PID controller
     int16_t drive_target = drive_current_frame_required_ticks; // subtract what has been driven out from the target //PID P
     // drive_target -= last_frame_ticks * last_frame_ticks_dir; // subtract what has been driven out from the target //PID P
-    long effort_drive = drive_target + pid_i_drive;  // add dept from last frame if robot was not moving yet had to, slowly
-    effort_drive = (effort_drive > DRIVE_MAX_DEPT) ? DRIVE_MAX_DEPT * RobotUtils::sign(effort_drive) : effort_drive; // do not cummulate dept too much
+    long effort_drive = drive_target + pid_i_drive;  // add debt from last frame if robot was not moving yet had to, slowly
+    effort_drive = (effort_drive > DRIVE_MAX_DEBT) ? DRIVE_MAX_DEBT * RobotUtils::sign(effort_drive) : effort_drive; // do not cummulate debt too much
     // snprintf(buffer, sizeof(buffer), "%d;%d;%d", drive_target, effort_drive, drive_current_frame_required_ticks);
     // TEST_MESSAGE(buffer);
 
     if ( (last_frame_ticks < 1) && (driveStoppedDueToRotation == false) )
     {
         pid_i_drive += drive_current_frame_required_ticks; // no move since last frame
-        pid_i_drive = (pid_i_drive > DRIVE_MAX_INTDEPT) ? DRIVE_MAX_INTDEPT * RobotUtils::sign(pid_i_drive) : pid_i_drive; // do not cummulate integration too much
+        pid_i_drive = (pid_i_drive > DRIVE_MAX_INTDEBT) ? DRIVE_MAX_INTDEBT * RobotUtils::sign(pid_i_drive) : pid_i_drive; // do not cummulate integration too much
     }
     else
     {
