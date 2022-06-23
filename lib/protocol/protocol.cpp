@@ -91,9 +91,9 @@ void emit_caster_joint_states(MsgCasterJointStates_t *cjs) {
     Serial3.write(CASTER_JOINT_STATES);
     crc8.add(CASTER_JOINT_STATES);
 
-    cjs->fl_caster_drive_joint += cjs->fl_caster_drive_joint >> 8;
-    cjs->fr_caster_drive_joint += cjs->fr_caster_drive_joint >> 8;
-    cjs->r_caster_drive_joint += cjs->r_caster_drive_joint >> 8;
+    cjs->fl_caster_drive_joint += cjs->fl_caster_drive_joint << 8;
+    cjs->fr_caster_drive_joint += cjs->fr_caster_drive_joint << 8;
+    cjs->r_caster_drive_joint += cjs->r_caster_drive_joint << 8;
 
     uint8_t *buf = (uint8_t*)cjs;
     Serial3.write(buf, sizeof(MsgCasterJointStates_t));
