@@ -97,7 +97,7 @@ int16_t Caster::getDriveTicks()
     return drive_sensor_ticks * drive_direction;
 }
 
-int16_t Caster::getDriveTicksDept()
+int16_t Caster::getDriveTicksDebt()
 {
     return 0; //drive_target;
 }
