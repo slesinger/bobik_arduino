@@ -8,6 +8,8 @@
 
 #include "BobikCasters.h"
 
+// #define DEBUG_SERIAL
+
 // #include <hx711.h>
 // #include <mpu9150.h> //IMU GY-9150
 
@@ -28,6 +30,10 @@ void setup()
 
   casters_handler->init(&caster_settings);
   serial_event_message_subscribe(DRIVE_CMD, casters_handler);
+
+#ifdef DEBUG_SERIAL
+  Serial.begin(9600);
+#endif
 }
 
 void loop()
@@ -44,7 +50,7 @@ void loop()
   caster_joint_states.fr_caster_drive_joint = robot->caster_fr->getDriveTicks();
   caster_joint_states.r_caster_drive_joint = robot->caster_r->getDriveTicks();
   emit_caster_joint_states(&caster_joint_states);
-
+  // Serial.println(caster_joint_states.fl_caster_drive_joint);
   // MPU
   // base_mpu.run();
 

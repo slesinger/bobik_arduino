@@ -39,16 +39,7 @@ Bobik::Bobik()
 #include "base_move.h"
 
 void Bobik::execute() {
-    // rotation_actual = caster_fl->getRotation();
-    // rotation_actual = caster_fr->getRotation();
-    // rotation_actual = caster_r->getRotation();
-
-    // ticks_actual_fl += caster_fl->getDriveTicks();
-    // ticks_actual_fr += caster_fr->getDriveTicks();
-    // ticks_actual_r  += caster_r->getDriveTicks();
-
     caster_fl->execute();
     caster_fr->execute();
     caster_r->execute();
-
 }
