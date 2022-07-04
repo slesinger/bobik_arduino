@@ -183,9 +183,9 @@ void test_move_fwd_5seconds(void)
   // robot.caster_r->setDriveEffort(200);
   for (int t = 0; t < 20 * 5; t++)
   {
-    ticks_actual_fl += robot.caster_fl->getDriveTicks();
-    ticks_actual_fr += robot.caster_fr->getDriveTicks();
-    ticks_actual_r += robot.caster_r->getDriveTicks();
+    ticks_actual_fl += robot.caster_fl->getDriveTicksRealized();
+    ticks_actual_fr += robot.caster_fr->getDriveTicksRealized();
+    ticks_actual_r += robot.caster_r->getDriveTicksRealized();
     robot.caster_fl->execute(); // will zero tick count;
     robot.caster_fr->execute(); // will zero tick count;
     robot.caster_r->execute();  // will zero tick count;
@@ -208,7 +208,7 @@ void test_drive_1000ticks_r(void)
   caster->setDriveTarget(DRIVE_TARGET, false);
   for (int t = 0; t < 20 * 10; t++) // total test run length
   {
-    ticks_actual += caster->getDriveTicks();
+    ticks_actual += caster->getDriveTicksRealized();
     caster->execute();
     delay(1000 / 20);
   }
@@ -230,9 +230,9 @@ void test_drive_fwd(void)
 
   for (int t = 0; t < 20 * 10; t++) // total test run length
   {
-    ticks_actual_fl += robot.caster_fl->getDriveTicks();
-    ticks_actual_fr += robot.caster_fr->getDriveTicks();
-    ticks_actual_r += robot.caster_r->getDriveTicks();
+    ticks_actual_fl += robot.caster_fl->getDriveTicksRealized();
+    ticks_actual_fr += robot.caster_fr->getDriveTicksRealized();
+    ticks_actual_r += robot.caster_r->getDriveTicksRealized();
     robot.execute();
     delay(1000 / 20);
   }

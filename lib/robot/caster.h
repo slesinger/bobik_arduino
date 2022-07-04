@@ -3,7 +3,7 @@
 
 #include <AS5048A.h> //absolute rotation encoder
 #include "robot_config_types.h"
-// #include "component.h"
+#include <CircularBuffer.h>
 
 class Caster // : public Component
 {
@@ -41,14 +41,14 @@ public:
      * Gets number interrupts generated on IR sensor on edge for last frame. Codewheel has 120 holes => 240 edges. !Run preemptive logic once a loop
      * @return number of ticks. 1 tick ~ 2 deg
      */
-    int16_t getDriveTicks();
+    int16_t getDriveTicksRealized();
 
     /**
-     * @brief Tell how many ticks the caster has to perform until next frame
+     * @brief Tell how many ticks the caster has to perform until next frame. This calculates as debt = requested - realized.
      * 
      * @return int16_t ticks (2 edges per hole = 2 ticks)
      */
-    int16_t getDriveTicksDept();
+    float getDriveTicksDebt();
 
     /**
      * @brief Add new requirement on number of ticks to current target (debt) Set Drive Effort for given frame before calling execute! PID included.
@@ -58,7 +58,12 @@ public:
     void setDriveTarget(int16_t drive_ticks, bool stoppedFlag);
 
     /**
-     * @brief Runs all caster logic for current frame. !Read getDriveTicks() before calling execute()
+     * Do things at beginning of loop.
+     */
+    void loop_start();
+
+    /**
+     * @brief Runs all caster logic for current frame. !Read getDriveTicksRealized() before calling execute()
      *
      */
     void execute();
@@ -102,12 +107,19 @@ private:
     int16_t pid_prev_rotation;
     int16_t pid_i_rotation;
     bool driveStoppedDueToRotation;
-    uint16_t drive_sensor_ticks;
+    /**
+     * Counter increased by interrupt.
+     */
+    uint16_t drive_sensor_ticks_current_counter;
+    int16_t drive_sensor_ticks_last_frame;
     int last_drive_sensor_val;
     int8_t last_frame_ticks_dir;
     unsigned long drive_sensor_tick_last_update_ms; // to filter IR signal jitter on edges, interrupts are damn fast. Signal needs to be stable at least 2ms
     int16_t pid_i_drive;
-    // int16_t drive_target;
+    /**
+     * Holds unrealized ticks. It is debt from last frame an cummulates to a buffer for running average
+     */
+    CircularBuffer<int16_t, 20> drive_debt_queue;
     int16_t drive_current_frame_required_ticks;
     /**
      * @brief Take memory of requested drive direction. This memory is later used to make drive ticks positive or negative (give drive sensor a direction).

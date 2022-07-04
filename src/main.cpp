@@ -8,7 +8,7 @@
 
 #include "BobikCasters.h"
 
-// #define DEBUG_SERIAL
+#define DEBUG_SERIAL
 
 // #include <hx711.h>
 // #include <mpu9150.h> //IMU GY-9150
@@ -41,14 +41,15 @@ void loop()
   // Loop start
   unsigned long loop_start = millis();
   emit_loop_start();
+  robot->loop_start();
 
   // Casters sensors
   caster_joint_states.fl_caster_rotation_joint = robot->caster_fl->getRotation();
   caster_joint_states.fr_caster_rotation_joint = robot->caster_fr->getRotation();
   caster_joint_states.r_caster_rotation_joint = robot->caster_r->getRotation();
-  caster_joint_states.fl_caster_drive_joint = robot->caster_fl->getDriveTicks();
-  caster_joint_states.fr_caster_drive_joint = robot->caster_fr->getDriveTicks();
-  caster_joint_states.r_caster_drive_joint = robot->caster_r->getDriveTicks();
+  caster_joint_states.fl_caster_drive_joint = robot->caster_fl->getDriveTicksRealized();
+  caster_joint_states.fr_caster_drive_joint = robot->caster_fr->getDriveTicksRealized();
+  caster_joint_states.r_caster_drive_joint = robot->caster_r->getDriveTicksRealized();
   emit_caster_joint_states(&caster_joint_states);
   // Serial.println(caster_joint_states.fl_caster_drive_joint);
   // MPU

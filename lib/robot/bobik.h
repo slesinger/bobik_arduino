@@ -34,6 +34,10 @@ public:
     static void stopAllCastersMotors();
 
     /**
+     * Do things at beginning of loop. Delegate to indiviadual components.
+     */
+    void loop_start();
+    /**
      * @brief Call each frame to commit new values to hardware.
      * 
      */

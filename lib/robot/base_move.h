@@ -90,11 +90,26 @@ void Bobik::setCmdVel(float x, float y, float gamma)
     float spda = RobotUtils::l2dist(ax - POS_A_x, ay - POS_A_y);
     float spdb = RobotUtils::l2dist(bx - POS_B_x, by - POS_B_y);
     float spdc = RobotUtils::l2dist(cx - POS_C_x, cy - POS_C_y);
+    // Serial.print((int)(spda*10000)); Serial.print(';');
+    // Serial.print((int)(spdb*10000)); Serial.print(';');
+    // Serial.print((int)(spdc*10000)); Serial.print(';');
+    // include drive debt from last frame
+    spda += caster_fl->getDriveTicksDebt() * CASTER_TICKS2METERS;
+    spdb += caster_fr->getDriveTicksDebt() * CASTER_TICKS2METERS;
+    spdc += caster_r->getDriveTicksDebt() * CASTER_TICKS2METERS;
+    // Serial.print((int)(spda*10000)); Serial.print(';');
+    // Serial.print((int)(spdb*10000)); Serial.print(';');
+    // Serial.print((int)(spdc*10000)); Serial.print(';');
 
+    // recalculate individual speeds taking into account max limit
     float spd_coef = speed_cap(CASTER_DRIVE_MAX_SPEED / FPS, spda, spdb, spdc);
     spda *= spd_coef;
     spdb *= spd_coef;
     spdc *= spd_coef;
+    // Serial.print((int)(spda*10000)); Serial.print(';');
+    // Serial.print((int)(spdb*10000)); Serial.print(';');
+    // Serial.print((int)(spdc*10000)); Serial.print(';');
+    // Serial.println();
 
     desired_frame_config.base.caster_fl.x = ax;
     desired_frame_config.base.caster_fl.y = ay;

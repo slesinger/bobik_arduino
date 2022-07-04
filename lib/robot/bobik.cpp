@@ -38,6 +38,13 @@ Bobik::Bobik()
 
 #include "base_move.h"
 
+void Bobik::loop_start()
+{
+    caster_fl->loop_start();
+    caster_fr->loop_start();
+    caster_r->loop_start();
+}
+
 void Bobik::execute() {
     caster_fl->execute();
     caster_fr->execute();

@@ -32,6 +32,7 @@ struct DriveMotor_t {
 };
 
 struct Caster_t {
+    uint8_t id;   //0:FL, 1:FR, 2:R
     RotationSensor_t rotation_sensor;
     RotationMotor_t rotation_motor;
     DriveMotor_t drive_motor;
