@@ -4,7 +4,8 @@
 
 #include <SPI.h>
 
-class AS5048A{
+class AS5048A
+{
 
 	bool errorFlag;
 	byte _cs;
@@ -15,11 +16,10 @@ class AS5048A{
 	byte clk;
 	word position;
 	word transaction(word data);
-	
-	SPISettings settings;
-	
-	public:
 
+	SPISettings settings;
+
+public:
 	/**
 	 *	Constructor
 	 */
@@ -36,10 +36,10 @@ class AS5048A{
 	 */
 	void close();
 
-	/*
-	 * Read a register from the sensor
+	/**
+	 * @brief Read a register from the sensor
 	 * Takes the address of the register as a 16 bit word
-	 * Returns the value of the register
+	 * @return the value of the register
 	 */
 	word read(word registerAddress);
 
@@ -63,7 +63,6 @@ class AS5048A{
 	 * Returns the raw angle directly from the sensor
 	 */
 	word getRawRotation();
-
 
 	/**
 	 * returns the value of the state register
@@ -102,8 +101,7 @@ class AS5048A{
 	 */
 	bool error();
 
-	private:
-
+private:
 	byte spiCalcEvenParity(word);
 };
 #endif

@@ -108,20 +108,6 @@ void emit_IMU9DOF(MsgIMU9DOF_t *imu) {
     for (int i=0; i<18; i++) crc8.add(buf[i]);
 }
 
-// For testing purposes
-/*
-void dispatch_void(unsigned long timeout, unsigned long granularity, uint8_t *log_buf) {
-  delay(50);
-  for (int i=0; i<100; i++) {
-    if (Serial3.available()) {
-      Serial3.read();
-    }
-    else {
-      return;
-    }
-  }
-}
-*/
 
 void dispatch_until(unsigned long timeout, unsigned long granularity, uint8_t *log_buf) {
   while(1) {  // Read and wait cycle

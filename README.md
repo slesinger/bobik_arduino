@@ -14,6 +14,8 @@ If serial send and receive does not work in parallel, reset Arduino
 
 https://aws1.discourse-cdn.com/arduino/original/4X/4/0/c/40ca0db220e359ad94a4e61e70d0a54406986232.png
 
+Most pins is configured in ```lib/robot/robot_config.h```
+
 ```
 4 - PWM ENA drive caster LF (yellow, 1 stripe, close to pin)
 5 - PWM ENA drive caster RF (yellow, 2 stripes, close to pin)
@@ -23,9 +25,11 @@ https://aws1.discourse-cdn.com/arduino/original/4X/4/0/c/40ca0db220e359ad94a4e61
 11 - neco s AS5048!!!!!
 14 - TX to Jetson UART1 RXD J3A2 65 (green, needs level shifter to 1.8v, /dev/ttyTHS1  (https://elinux.org/Jetson/GPIO#GPIO_on_Jetson_TK1))
 15 - RX to Jetson UART1 TXD J3A2 68 (white, needs level shifter to 1.8v)
-19 - odom IR tick signal FL
-20 - odom IR tick signal FR
-21 - odom IR tick signal R
+20 - I2C SDA for MPU9150
+21 - I2C SCL for MPU9150
+22- odom IR tick signal FL (blue)
+24- odom IR tick signal FR (blue)
+26- odom IR tick signal R (green)
 
 28 - IN1 drive caster LF (green, 1 stripes, far from pin)
 30 - IN2 drive caster LF (blue, 1 stripes, far from pin)

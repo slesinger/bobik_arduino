@@ -256,6 +256,7 @@ void Caster::clean_afer_execute()
 
 void Caster::stopMotors()
 {
+    drive_debt_queue.clear();
     drive_current_frame_required_ticks = 0;
     pid_i_drive = 0;
     digitalWrite(cfg.drive_motor.in1, LOW);

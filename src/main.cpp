@@ -5,23 +5,25 @@
 #include <protocol.h>
 #include <protocol_types.h>
 #include "robot_utils.h"
-
 #include "BobikCasters.h"
+#include <mpu9150.h> //IMU GY-9150
+// #include <hx711.h>
 
 #define DEBUG_SERIAL
 
-// #include <hx711.h>
-// #include <mpu9150.h> //IMU GY-9150
 
 Bobik *robot = new Bobik();
 
 // Define messages sent to driver
 MsgCasterJointStates_t caster_joint_states;
+MsgIMU9DOF_t imu_msg;
 // hx711 loadcell_upper_arm_lift_joint = hx711(LOADCELL_UPPER_ARM_LIFT_JOINT, 4, 5);
-// mpu9150 base_mpu = mpu9150(); //I2C, including Wire.init()
 
+// Create robot components
 caster_settings_t caster_settings;
 BobikCasters *casters_handler = new BobikCasters(robot);
+mpu9150 base_mpu = mpu9150();
+
 
 void setup()
 {
@@ -29,6 +31,7 @@ void setup()
   protocol_init();
 
   casters_handler->init(&caster_settings);
+
   serial_event_message_subscribe(DRIVE_CMD, casters_handler);
 
 #ifdef DEBUG_SERIAL
@@ -51,9 +54,10 @@ void loop()
   caster_joint_states.fr_caster_drive_joint = robot->caster_fr->getDriveTicksRealized();
   caster_joint_states.r_caster_drive_joint = robot->caster_r->getDriveTicksRealized();
   emit_caster_joint_states(&caster_joint_states);
-  // Serial.println(caster_joint_states.fl_caster_drive_joint);
-  // MPU
-  // base_mpu.run();
+
+  // IMU sensor
+  base_mpu.readSensor9(&imu_msg);
+  emit_IMU9DOF(&imu_msg);
 
   // loadcell_upper_arm_lift_joint.run();
   // uint16_t lap = (uint16_t)(millis() - loop_start);
