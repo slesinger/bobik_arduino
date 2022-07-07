@@ -51,9 +51,9 @@ struct MsgCasterJointStates_t {
 
 #define IMU_9DOF 4
 struct MsgIMU9DOF_t {
-   int16_t ax, ay, az;
-   int16_t gx, gy, gz;
-   int16_t mx, my, mz;
+   int16_t ax, ay, az;  // g * s^-1
+   int16_t gx, gy, gz;  // deg * s^-1
+   int16_t qw, qx, qy, qz;  // quaternion
 };
 
 #define LOADCELL_UPPER_ARM_LIFT_JOINT 5

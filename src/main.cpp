@@ -56,7 +56,7 @@ void loop()
   emit_caster_joint_states(&caster_joint_states);
 
   // IMU sensor
-  base_mpu.readSensor9(&imu_msg);
+  base_mpu.readSensorQAG(&imu_msg);
   emit_IMU9DOF(&imu_msg);
 
   // loadcell_upper_arm_lift_joint.run();
