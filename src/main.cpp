@@ -31,6 +31,7 @@ void setup()
   protocol_init();
 
   casters_handler->init(&caster_settings);
+  base_mpu.init();
 
   serial_event_message_subscribe(DRIVE_CMD, casters_handler);
 

@@ -8,16 +8,21 @@
 // conversion from sensor units will be done in bobik_bridge
 
 MPU9150 mpu;
-uint16_t packetSize = 0;
+uint16_t packetSize = 0; // normally 48
 uint8_t devStatus = 0;
 
 mpu9150::mpu9150()
 {
+}
+
+void mpu9150::init()
+{
     mpu.initialize();
-    devStatus = mpu.dmpInitialize();
     mpu.setDLPFMode(MPU9150_DLPF_BW_20);            // 21Hz
     mpu.setFullScaleGyroRange(MPU9150_GYRO_FS_250); // [deg/sec]
-                                                    // accell is set to +/- 2g already
+    mpu.setFullScaleAccelRange(MPU9150_ACCEL_FS_2); // +/- 2g
+    devStatus = mpu.dmpInitialize();
+
     if (devStatus == 0)
     {
         // turn on the DMP, now that it's ready
@@ -33,10 +38,6 @@ mpu9150::mpu9150()
     }
 }
 
-mpu9150::~mpu9150()
-{
-}
-
 uint8_t mpu9150::readSensorQAG(MsgIMU9DOF_t *msg)
 {
     if (packetSize == 0)
@@ -46,29 +47,48 @@ uint8_t mpu9150::readSensorQAG(MsgIMU9DOF_t *msg)
     uint8_t fifoBuffer[64];
     Quaternion q;    // [w, x, y, z]         quaternion container
     VectorInt16 aa;  // [x, y, z]            accel sensor measurements
+    VectorInt16 aa_sum;
     int16_t gyro[3]; // [x, y, z]            gyro sensor measurements
+    int16_t gyro_sum[3];
 
+    Serial.println(fifoCount);
+    float count = 0;
+    gyro_sum[0] = 0;
+    gyro_sum[1] = 0;
+    gyro_sum[2] = 0;
     while (fifoCount >= packetSize)
     {
+        count++;
+        mpu.getFIFOBytes(fifoBuffer, packetSize);
         mpu.dmpGetQuaternion(&q, fifoBuffer); // orientation
         mpu.dmpGetGyro(gyro, fifoBuffer);     // angular_velocity
         mpu.dmpGetAccel(&aa, fifoBuffer);     // linear_acceleration
 
-        msg->qw = q.w;
-        msg->qx = q.x;
-        msg->qy = q.y;
-        msg->qz = q.z;
+        // Always take last value
+        msg->qw = (int16_t)(q.w * FLOAT_INT16_PRECISION);
+        msg->qx = (int16_t)(q.x * FLOAT_INT16_PRECISION);
+        msg->qy = (int16_t)(q.y * FLOAT_INT16_PRECISION);
+        msg->qz = (int16_t)(q.z * FLOAT_INT16_PRECISION);
 
-        msg->gx = gyro[0];
-        msg->gy = gyro[1];
-        msg->gz = gyro[2];
+        // Average
+        gyro_sum[0] += gyro[0];
+        gyro_sum[1] += gyro[1];
+        gyro_sum[2] += gyro[2];
 
-        msg->ax = aa.x;
-        msg->ay = aa.y;
-        msg->az = aa.z;
+        // Average
+        aa_sum.x += aa.x;
+        aa_sum.y += aa.y;
+        aa_sum.z += aa.z;
 
         fifoCount -= packetSize;
     }
+    msg->gx = (int16_t)((float)gyro_sum[0] / count);
+    msg->gy = (int16_t)((float)gyro_sum[1] / count);
+    msg->gz = (int16_t)((float)gyro_sum[2] / count);
+
+    msg->ax = (int16_t)((float)aa_sum.x / count);
+    msg->ay = (int16_t)((float)aa_sum.y / count);
+    msg->az = (int16_t)((float)aa_sum.z / count);
 
     return 0;
 }

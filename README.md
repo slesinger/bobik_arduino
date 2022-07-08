@@ -113,3 +113,11 @@ MOSI- yellow
 MISO- white
 V5V - red
 GND - black
+
+# Knowledgebase
+
+### git pull error
+
+```fatal: unable to access 'https://github.com/slesinger/bobik_arduino.git/': server certificate verification failed.```
+
+Just wait for Jetson time to synchronize from NTP servers.
