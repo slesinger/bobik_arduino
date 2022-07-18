@@ -240,10 +240,20 @@ void Caster::execute()
         pwm_drive_prev = 0;
     }
 
+    if (pwm_drive == 0)
+    {
+        digitalWrite(cfg.drive_motor.in1, LOW);
+        digitalWrite(cfg.drive_motor.in2, LOW);
+        analogWrite(cfg.drive_motor.ena, 200);
+    }
+    else
+    {
+        digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(effort_drive));
+        digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(effort_drive));
+        analogWrite(cfg.drive_motor.ena, abs(pwm_drive));          // abs() is not needed here, just safety
+    }
+
     // debug_int = effort_drive;
-    digitalWrite(cfg.drive_motor.in1, RobotUtils::sign1(effort_drive));
-    digitalWrite(cfg.drive_motor.in2, RobotUtils::sign2(effort_drive));
-    analogWrite(cfg.drive_motor.ena, abs(pwm_drive));          // abs() is not needed here, just safety
     last_frame_ticks_dir = RobotUtils::signZero(effort_drive); // will be used next frame to determine ticks to add or sub
 
     clean_afer_execute();
@@ -261,9 +271,9 @@ void Caster::stopMotors()
     pid_i_drive = 0;
     digitalWrite(cfg.drive_motor.in1, LOW);
     digitalWrite(cfg.drive_motor.in2, LOW);
-    analogWrite(cfg.drive_motor.ena, 0);
+    analogWrite(cfg.drive_motor.ena, 255);
 
     digitalWrite(cfg.rotation_motor.in1, LOW);
     digitalWrite(cfg.rotation_motor.in2, LOW);
-    analogWrite(cfg.rotation_motor.ena, 0);
+    analogWrite(cfg.rotation_motor.ena, 255);
 }
