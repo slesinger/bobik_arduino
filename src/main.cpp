@@ -27,17 +27,15 @@ mpu9150 base_mpu = mpu9150();
 
 void setup()
 {
+#ifdef DEBUG_SERIAL
+  Serial.begin(9600);
+#endif
   pinMode(13, OUTPUT); // for debugging
   protocol_init();
-
   casters_handler->init(&caster_settings);
   base_mpu.init();
 
   serial_event_message_subscribe(DRIVE_CMD, casters_handler);
-
-#ifdef DEBUG_SERIAL
-  Serial.begin(9600);
-#endif
 }
 
 void loop()

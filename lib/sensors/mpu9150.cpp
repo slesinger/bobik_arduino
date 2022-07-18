@@ -51,7 +51,6 @@ uint8_t mpu9150::readSensorQAG(MsgIMU9DOF_t *msg)
     int16_t gyro[3]; // [x, y, z]            gyro sensor measurements
     int16_t gyro_sum[3];
 
-    Serial.println(fifoCount);
     float count = 0;
     gyro_sum[0] = 0;
     gyro_sum[1] = 0;
