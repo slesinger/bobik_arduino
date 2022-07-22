@@ -117,7 +117,7 @@ void emit_IMU9DOF(MsgIMU9DOF_t *imu)
 
   uint8_t *buf = (uint8_t *)imu;
   Serial3.write(buf, sizeof(MsgIMU9DOF_t));
-  for (int i = 0; i < 13*sizeof(int16_t); i++)
+  for (int i = 0; i < 10*sizeof(int16_t); i++)
     crc8.add(buf[i]);
 }
 

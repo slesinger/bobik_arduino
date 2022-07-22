@@ -27,7 +27,7 @@ mpu9150 base_mpu = mpu9150();
 void test_mpu(void)
 {
     MsgIMU9DOF_t imu_msg;
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 1000; i++)
     {
         delay(55);
         base_mpu.readSensorQAG(&imu_msg);
@@ -47,6 +47,10 @@ void test_mpu(void)
         Serial.print(imu_msg.gz);
         Serial.print("\t - \t");
 
+        Serial.print(imu_msg.mx);
+        Serial.print("\t");
+        Serial.print(imu_msg.my);
+        Serial.print("\t");
         Serial.print(imu_msg.mz);
         Serial.print("\t - \t");
 

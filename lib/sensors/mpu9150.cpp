@@ -61,7 +61,7 @@ uint8_t mpu9150::readSensorQAG(MsgIMU9DOF_t *msg)
         count++;
         mpu.getFIFOBytes(fifoBuffer, packetSize);
         mpu.dmpGetQuaternion(&q, fifoBuffer); // orientation
-        mpu.dmpGetMag(mag, fifoBuffer);       // raw orientation
+        // mpu.dmpGetMag(mag, fifoBuffer);       // raw orientation
         mpu.dmpGetGyro(gyro, fifoBuffer);     // angular_velocity
         mpu.dmpGetAccel(&aa, fifoBuffer);     // linear_acceleration
 
@@ -84,9 +84,9 @@ uint8_t mpu9150::readSensorQAG(MsgIMU9DOF_t *msg)
         fifoCount -= packetSize;
     }
 
-    msg->mx = mag[0];
-    msg->my = mag[1];
-    msg->mz = mag[2];
+    // msg->mx = mag[0];
+    // msg->my = mag[1];
+    // msg->mz = mag[2];
 
     msg->gx = (int16_t)((float)gyro_sum[0] / count);
     msg->gy = (int16_t)((float)gyro_sum[1] / count);
