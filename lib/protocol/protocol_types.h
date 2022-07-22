@@ -53,6 +53,7 @@ struct MsgCasterJointStates_t {
 struct MsgIMU9DOF_t {
    int16_t ax, ay, az;  // g * s^-1
    int16_t gx, gy, gz;  // deg * s^-1
+   int16_t mx, my, mz;  // deg * s^-1
    int16_t qw, qx, qy, qz;  // quaternion
 };
 

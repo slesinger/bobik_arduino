@@ -50,6 +50,7 @@ uint8_t mpu9150::readSensorQAG(MsgIMU9DOF_t *msg)
     VectorInt16 aa_sum;
     int16_t gyro[3]; // [x, y, z]            gyro sensor measurements
     int16_t gyro_sum[3];
+    int16_t mag[3];  // [x, y, z]            magnetometer, from -4096 to +4095 in decimal -> Magnetic flux density [µT] -1229 to 1229
 
     float count = 0;
     gyro_sum[0] = 0;
@@ -60,6 +61,7 @@ uint8_t mpu9150::readSensorQAG(MsgIMU9DOF_t *msg)
         count++;
         mpu.getFIFOBytes(fifoBuffer, packetSize);
         mpu.dmpGetQuaternion(&q, fifoBuffer); // orientation
+        mpu.dmpGetMag(mag, fifoBuffer);       // raw orientation
         mpu.dmpGetGyro(gyro, fifoBuffer);     // angular_velocity
         mpu.dmpGetAccel(&aa, fifoBuffer);     // linear_acceleration
 
@@ -81,6 +83,11 @@ uint8_t mpu9150::readSensorQAG(MsgIMU9DOF_t *msg)
 
         fifoCount -= packetSize;
     }
+
+    msg->mx = mag[0];
+    msg->my = mag[1];
+    msg->mz = mag[2];
+
     msg->gx = (int16_t)((float)gyro_sum[0] / count);
     msg->gy = (int16_t)((float)gyro_sum[1] / count);
     msg->gz = (int16_t)((float)gyro_sum[2] / count);

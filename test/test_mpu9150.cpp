@@ -47,6 +47,9 @@ void test_mpu(void)
         Serial.print(imu_msg.gz);
         Serial.print("\t - \t");
 
+        Serial.print(imu_msg.mz);
+        Serial.print("\t - \t");
+
         Serial.print(imu_msg.ax);
         Serial.print("\t");
         Serial.print(imu_msg.ay);
