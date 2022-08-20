@@ -8,6 +8,8 @@
 #define TOPIC_LIDAR_RANGES "lidar_ranges"
 #define TOPIC_LIDAR_INTENSITIES "lidar_intensities"
 #define TOPIC_IMU9DOF "imu"
+#define TOPIC_KINECT_DEPTH "kinect_depth"
+#define TOPIC_KINECT_RGB "kinect_rgb"
 
 #define LOOP_START 0xEA
 #define LOOP_END 0xAE
