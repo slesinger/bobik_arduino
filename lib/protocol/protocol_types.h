@@ -18,7 +18,7 @@
 // Common data types
 struct Header_t {
    int32_t sec;
-   int32_t nanosec;
+   uint32_t nanosec;
 };
 
 struct LaserScan_t {
