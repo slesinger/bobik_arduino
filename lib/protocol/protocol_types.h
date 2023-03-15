@@ -16,7 +16,13 @@
 #define MSG_START 0xEE
 
 // Common data types
+struct Header_t {
+   int32_t sec;
+   int32_t nanosec;
+};
+
 struct LaserScan_t {
+   Header_t header;
    uint32_t time_increment;
    uint16_t data[360];
 };
